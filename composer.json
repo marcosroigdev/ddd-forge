@@ -1,0 +1,33 @@
+{
+    "name": "marcosroigdev/ddd-forge",
+    "description": "Scaffolding tool for DDD & Hexagonal Architecture in PHP",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.2",
+        "symfony/console": "^7.3",
+        "symfony/filesystem": "^7.3",
+        "nette/php-generator": "^4.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.3",
+        "phpstan/phpstan": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.88"
+    },
+    "autoload": {
+        "psr-4": {
+            "DddForge\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DddForge\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "forge": "bin/ddd-forge"
+    },
+    "bin": ["bin/ddd-forge"]
+}

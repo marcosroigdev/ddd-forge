@@ -1,0 +1,31 @@
+# Dependencies
+/vendor/
+
+# Lock file
+/composer.lock
+
+# PHPUnit
+/.phpunit.result.cache
+/coverage/
+/build/
+
+# PHPStan
+/.phpstan.cache/
+/phpstan.neon
+/phpstan.neon.local
+
+# PHP-CS-Fixer
+/.php-cs-fixer.cache
+
+# IDEs and editors
+/.idea/
+/.vscode/
+/nbproject/
+/*.swp
+*~
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
