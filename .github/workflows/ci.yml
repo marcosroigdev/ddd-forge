@@ -17,6 +17,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-      - run: composer install --no-interaction --no-progress --no-suggest
-      - run: vendor/bin/phpunit
-      - run: vendor/bin/phpstan analyse
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpunit -c phpunit.xml
+      - run: vendor/bin/phpstan analyse --no-progress
