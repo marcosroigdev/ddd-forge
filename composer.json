@@ -27,7 +27,17 @@
         }
     },
     "scripts": {
-        "forge": "bin/ddd-forge"
+        "forge": "bin/ddd-forge",
+        "install-dev": "composer install",
+        "test": "vendor/bin/phpunit -c phpunit.xml",
+        "stan": "vendor/bin/phpstan analyse --no-progress",
+        "lint": "vendor/bin/php-cs-fixer fix --diff --dry-run --verbose --quiet",
+        "csfix": "vendor/bin/php-cs-fixer fix --diff --verbose --quiet",
+        "qa": [
+            "@test",
+            "@stan",
+            "@lint"
+        ]
     },
     "bin": ["bin/ddd-forge"]
 }
