@@ -3,8 +3,17 @@
     "description": "Scaffolding tool for DDD & Hexagonal Architecture in PHP",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcos Roig",
+            "email": "12345678+marcosroigdev@users.noreply.github.com",
+            "homepage": "https://marcosroig.dev/",
+            "role": "Developer"
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "keywords": ["php", "ddd", "hexagonal", "architecture", "scaffolding", "cli", "generator"],
     "require": {
         "php": ">=8.2",
         "symfony/console": "^7.3",
