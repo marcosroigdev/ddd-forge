@@ -389,6 +389,10 @@ final class MakeContextCommand extends Command
         }
     }
 
+    /**
+     * @param string[] $paths
+     * @param array{contextName: string, baseDir: string, force: bool, dryRun: bool, withSublayers: bool, template: ?string} $config
+     */
     private function exportToYaml(SymfonyStyle $io, array $paths, array $config, string $filename): void
     {
         $filesystem = new Filesystem();
@@ -403,6 +407,10 @@ final class MakeContextCommand extends Command
         }
     }
 
+    /**
+     * @param string[] $paths
+     * @param array{contextName: string, baseDir: string, force: bool, dryRun: bool, withSublayers: bool, template: ?string} $config
+     */
     private function buildYamlStructure(array $paths, array $config): string
     {
         $yaml = "# DDD Context Structure: {$config['contextName']}\n";
@@ -730,7 +738,17 @@ final class MakeContextCommand extends Command
         $tableRows = [];
         foreach ($presets as $presetFile) {
             $presetName = basename($presetFile, '.json');
-            $data = json_decode(file_get_contents($presetFile), true);
+            $fileContents = file_get_contents($presetFile);
+
+            if ($fileContents === false) {
+                continue;
+            }
+
+            $data = json_decode($fileContents, true);
+
+            if (!is_array($data)) {
+                continue;
+            }
 
             $template = $data['template'] ?? 'custom';
             $sublayerCount = 0;
@@ -741,12 +759,20 @@ final class MakeContextCommand extends Command
                 }
             }
 
+            $fileTime = filemtime($presetFile);
+            $createdDate = $fileTime !== false ? date('Y-m-d H:i', $fileTime) : 'Unknown';
+
             $tableRows[] = [
                 $presetName,
                 $template,
                 $sublayerCount > 0 ? "$sublayerCount sublayers" : 'Basic',
-                date('Y-m-d H:i', filemtime($presetFile))
+                $createdDate
             ];
+        }
+
+        if (empty($tableRows)) {
+            $io->warning('No valid presets found. Create one using --save-preset option.');
+            return;
         }
 
         $io->table(['Name', 'Template', 'Structure', 'Created'], $tableRows);
@@ -777,14 +803,22 @@ final class MakeContextCommand extends Command
                 'createdAt' => date('Y-m-d H:i:s'),
             ];
 
+            $jsonContent = json_encode($presetData, JSON_PRETTY_PRINT);
+
+            if ($jsonContent === false) {
+                throw new RuntimeException('Failed to encode preset data to JSON');
+            }
+
             $presetFile = $presetsDir . '/' . $presetName . '.json';
-            $filesystem->dumpFile($presetFile, json_encode($presetData, JSON_PRETTY_PRINT));
+            $filesystem->dumpFile($presetFile, $jsonContent);
 
             $io->success("✓ Preset '$presetName' saved successfully!");
             $io->text("  Location: <info>$presetFile</info>");
             $io->text("  Reuse with: <info>make:context NewContext --use-preset=$presetName</info>");
 
         } catch (IOExceptionInterface $e) {
+            $io->warning("Could not save preset: " . $e->getMessage());
+        } catch (RuntimeException $e) {
             $io->warning("Could not save preset: " . $e->getMessage());
         }
     }
@@ -798,9 +832,16 @@ final class MakeContextCommand extends Command
             exit(Command::INVALID);
         }
 
-        $presetData = json_decode(file_get_contents($presetFile), true);
+        $fileContents = file_get_contents($presetFile);
 
-        if ($presetData === null) {
+        if ($fileContents === false) {
+            $io->error("Could not read preset file: $presetFile");
+            exit(Command::INVALID);
+        }
+
+        $presetData = json_decode($fileContents, true);
+
+        if (!is_array($presetData)) {
             $io->error("Invalid preset file: $presetFile");
             exit(Command::INVALID);
         }
@@ -818,7 +859,7 @@ final class MakeContextCommand extends Command
             $input->setOption(self::WITH_SUBLAYERS_OPTION, true);
         }
 
-        if (!empty($presetData['customSublayers'])) {
+        if (!empty($presetData['customSublayers']) && is_array($presetData['customSublayers'])) {
             $this->customSublayers = $presetData['customSublayers'];
             $input->setOption(self::WITH_SUBLAYERS_OPTION, true);
         }
