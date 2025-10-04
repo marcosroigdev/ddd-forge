@@ -289,7 +289,7 @@ final class MakeContextCommandTest extends TestCase
 
         // Then
         $this->assertEquals(0, $this->commandTester->getStatusCode());
-        $this->assertDirectoryExists($this->testDir . '/Usermanagement');
+        $this->assertDirectoryExists($this->testDir . '/UserManagement');
     }
 
     public function test_givenSnakeCaseName_whenExecutingCommand_thenConvertsToStudlyCase(): void
@@ -305,7 +305,7 @@ final class MakeContextCommandTest extends TestCase
 
         // Then
         $this->assertEquals(0, $this->commandTester->getStatusCode());
-        $this->assertDirectoryExists($this->testDir . '/Orderprocessing');
+        $this->assertDirectoryExists($this->testDir . '/OrderProcessing');
     }
 
     public function test_givenBasicTemplate_whenExecutingCommand_thenCreatesOnlyMainLayers(): void
