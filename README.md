@@ -49,6 +49,8 @@ bin/ddd-forge make:context
 
 ```
 
+## See the [GUIDE](GUIDE.md) for more details and examples.
+
 ## 🤝 Contributing
 
 Contributions, ideas and feedback are welcome!
