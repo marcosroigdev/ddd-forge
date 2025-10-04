@@ -2,7 +2,7 @@
 # DDD-Forge ⚒️
 
 [![CI](https://github.com/marcosroigdev/ddd-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/marcosroigdev/ddd-forge/actions/workflows/ci.yml)
-![PHP](https://img.shields.io/badge/PHP-%5E8.2-blue)
+![PHP](https://img.shields.io/badge/PHP-%3E%3D8.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![Packagist Version](https://img.shields.io/packagist/v/marcosroigdev/ddd-forge.svg)](https://packagist.org/packages/marcosroigdev/ddd-forge)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/marcosroigdev/ddd-forge.svg)](https://packagist.org/packages/marcosroigdev/ddd-forge)
