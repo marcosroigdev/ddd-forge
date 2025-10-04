@@ -1,10 +1,33 @@
 #!/usr/bin/env php
 <?php
+
 declare(strict_types=1);
+
+/**
+ * DDD Forge CLI
+ *
+ * Scaffolding tool for DDD & Hexagonal Architecture. Generate contexts, aggregates, repositories, and command handlers — with Symfony & Laravel support.
+ *
+ * @author Marcos Roig
+ * @link https://github.com/marcosroigdev/ddd-forge
+ */
 
 require __DIR__ . '/../vendor/autoload.php';
 
 use DddForge\Console\Application;
 
 $app = new Application();
+
+echo <<<'HELP'
+  ____  ____  ____    _____                    
+ |  _ \|  _ \|  _ \  |  ___|__  _ __ __ _  ___ 
+ | | | | | | | | | | | |_ / _ \| '__/ _` |/ _ \
+ | |_| | |_| | |_| | |  _| (_) | | | (_| |  __/
+ |____/|____/|____/  |_|  \___/|_|  \__, |\___|
+                                    |___/       
+
+Scaffolding tool for DDD & Hexagonal Architecture. Generate contexts, aggregates, repositories, and command handlers — with Symfony & Laravel support.
+
+HELP;
+
 exit($app->run());

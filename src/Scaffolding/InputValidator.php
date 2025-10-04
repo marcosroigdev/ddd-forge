@@ -16,17 +16,17 @@ final class InputValidator
         private readonly TemplateEngine $templateEngine
     ) {}
 
-    public function parseInput(InputInterface $input): array
+    public function parseInput(InputInterface $input, string $nameArgument = 'name'): array
     {
-        $rawName = (string) $input->getArgument('name');
-        $contextName = Str::studly(trim($rawName));
+        $rawName = (string) $input->getArgument($nameArgument);
+        $name = Str::studly(trim($rawName));
 
-        if ($contextName === '') {
-            throw new InvalidArgumentException('Context name cannot be empty or contain only invalid characters.');
+        if ($name === '') {
+            throw new InvalidArgumentException('Name cannot be empty or contain only invalid characters.');
         }
 
-        if (!preg_match('/^[A-Za-z][A-Za-z0-9]*$/', $contextName)) {
-            throw new InvalidArgumentException('Context name must start with a letter and contain only alphanumeric characters.');
+        if (!preg_match('/^[A-Za-z][A-Za-z0-9]*$/', $name)) {
+            throw new InvalidArgumentException('Name must start with a letter and contain only alphanumeric characters.');
         }
 
         $baseDir = rtrim((string) $input->getOption('dir'), self::DIRECTORY_SEPARATOR);
@@ -40,7 +40,7 @@ final class InputValidator
         }
 
         return [
-            'contextName' => $contextName,
+            'name' => $name,
             'baseDir' => $baseDir,
             'force' => (bool) $input->getOption('force'),
             'dryRun' => (bool) $input->getOption('dry-run'),

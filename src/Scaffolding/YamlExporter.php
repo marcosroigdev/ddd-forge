@@ -28,12 +28,13 @@ readonly class YamlExporter
 
     private function buildYamlStructure(array $paths, array $config): string
     {
-        $yaml = "# DDD Context Structure: {$config['contextName']}\n";
+        $type = $config['type'] ?? 'Structure';
+        $yaml = "# {$type}: {$config['name']}\n";
         $yaml .= "# Generated: " . date('Y-m-d H:i:s') . "\n";
         $yaml .= "# Template: " . ($config['template'] ?? 'custom') . "\n\n";
 
-        $yaml .= "context:\n";
-        $yaml .= "  name: {$config['contextName']}\n";
+        $yaml .= strtolower($type) . ":\n";
+        $yaml .= "  name: {$config['name']}\n";
         $yaml .= "  baseDir: {$config['baseDir']}\n";
         $yaml .= "  template: " . ($config['template'] ?? 'custom') . "\n\n";
 

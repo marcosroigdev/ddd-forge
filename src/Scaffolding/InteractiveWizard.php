@@ -15,27 +15,28 @@ readonly class InteractiveWizard
         private DirectoryStructureBuilder $structureBuilder
     ) {}
 
-    public function run(SymfonyStyle $io, InputInterface $input): array
+
+    public function run(SymfonyStyle $io, InputInterface $input, array $config): array
     {
-        $io->title('🏗️  DDD Context Generator Wizard');
-        $io->text([
-            'This wizard will guide you through creating a bounded context.',
-            'Press Ctrl+C at any time to cancel.',
-        ]);
+        $io->title("🏗️  {$config['title']}");
+        $io->text($config['description'] ?? []);
         $io->newLine();
 
-        if (!$input->getArgument('name')) {
+        $nameArgument = $config['nameArgument'] ?? 'name';
+        $namePrompt = $config['namePrompt'] ?? 'What is the name?';
+
+        if (!$input->getArgument($nameArgument)) {
             $name = $io->ask(
-                'What is the name of your bounded context?',
+                $namePrompt,
                 null,
                 function ($answer) {
                     if (empty(trim($answer))) {
-                        throw new RuntimeException('Context name cannot be empty.');
+                        throw new RuntimeException('Name cannot be empty.');
                     }
                     return $answer;
                 }
             );
-            $input->setArgument('name', $name);
+            $input->setArgument($nameArgument, $name);
         }
 
         $currentDir = $input->getOption('dir');

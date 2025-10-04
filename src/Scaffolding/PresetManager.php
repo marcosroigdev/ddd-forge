@@ -8,12 +8,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use RuntimeException;
 
-final class PresetManager
+readonly class PresetManager
 {
     private const PRESETS_DIR = '.ddd-forge/presets';
 
     public function __construct(
-        private readonly Filesystem $filesystem = new Filesystem()
+        private Filesystem $filesystem = new Filesystem()
     ) {}
 
     public function save(string $name, array $config, array $customSublayers): void

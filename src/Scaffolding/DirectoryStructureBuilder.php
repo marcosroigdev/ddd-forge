@@ -19,21 +19,22 @@ final class DirectoryStructureBuilder
     ) {}
 
     public function build(
-        string $contextName,
+        string $name,
         string $baseDir,
+        array $layers,
         bool $withSublayers = false,
         ?string $template = null,
         array $customSublayers = []
     ): array {
-        $root = $baseDir . self::DIRECTORY_SEPARATOR . $contextName;
+        $root = $baseDir . self::DIRECTORY_SEPARATOR . $name;
         $paths = [$root];
 
-        foreach (self::LAYER_PATHS as $layerPath) {
+        foreach ($layers as $layerPath) {
             $paths[] = $root . $layerPath;
         }
 
         if ($withSublayers) {
-            $sublayers = $this->resolveSublayers($template, $customSublayers);
+            $sublayers = $this->resolveSublayers($template, $customSublayers, $layers);
 
             foreach ($sublayers as $layer => $layerSublayers) {
                 foreach ($layerSublayers as $sublayer) {
@@ -45,7 +46,7 @@ final class DirectoryStructureBuilder
         return $paths;
     }
 
-    public function resolveSublayers(?string $template, array $customSublayers = []): array
+    public function resolveSublayers(?string $template, array $customSublayers = [], array $defaultLayers = []): array
     {
         if (!empty($customSublayers)) {
             return $customSublayers;
@@ -56,8 +57,7 @@ final class DirectoryStructureBuilder
             return $templateData['sublayers'] ?? [];
         }
 
-        $standardTemplate = $this->templateEngine->getTemplate('standard');
-        return $standardTemplate['sublayers'] ?? [];
+        return [];
     }
 
     public function getLayerPaths(): array
@@ -65,12 +65,12 @@ final class DirectoryStructureBuilder
         return self::LAYER_PATHS;
     }
 
-    public function groupPathsByLayer(array $paths, string $contextName): array
+    public function groupPathsByLayer(array $paths, string $name): array
     {
         $grouped = ['root' => []];
 
         foreach ($paths as $path) {
-            $relativePath = str_replace($contextName . '/', '', basename(dirname($path)) . '/' . basename($path));
+            $relativePath = str_replace($name . '/', '', basename(dirname($path)) . '/' . basename($path));
             $parts = explode('/', trim($relativePath, '/'));
 
             if (count($parts) === 1) {

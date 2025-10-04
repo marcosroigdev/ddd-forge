@@ -9,12 +9,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
-final class DirectoryManager
+readonly class DirectoryManager
 {
     private const GITKEEP_FILE = '.gitkeep';
 
     public function __construct(
-        private readonly Filesystem $filesystem = new Filesystem()
+        private Filesystem $filesystem
     ) {}
 
     public function createDirectories(SymfonyStyle $io, array $paths, array $config): int
@@ -22,7 +22,7 @@ final class DirectoryManager
         $created = 0;
         $skipped = 0;
 
-        $io->title("🏗️  Creating {$config['contextName']} Context");
+        $io->title("🏗️  Creating {$config['name']} {$config['type']}");
 
         foreach ($paths as $path) {
             try {
@@ -75,7 +75,7 @@ final class DirectoryManager
     private function showSummary(SymfonyStyle $io, array $config, int $created, int $skipped): void
     {
         $templateInfo = $config['template'] ? " using {$config['template']} template" : '';
-        $io->success("{$config['contextName']} context ready$templateInfo!");
+        $io->success("{$config['name']} {$config['type']} ready$templateInfo!");
 
         $summary = [];
         if ($created > 0) {
@@ -90,25 +90,11 @@ final class DirectoryManager
         }
 
         $io->newLine();
-        $io->text([
-            '🎯 Your bounded context is ready with the following structure:',
-            '   • <info>Domain</info>: Core business logic, entities, value objects, repositories',
-            '   • <info>Application</info>: Use cases, commands, queries, handlers',
-            '   • <info>Infrastructure</info>: External concerns, persistence, services',
-            '   • <info>UI</info>: User interfaces',
-        ]);
-
-        $io->newLine();
-        $io->text([
-            '💡 <comment>Next steps:</comment>',
-            '   1. Start creating your domain entities in the Domain layer',
-            '   2. Define your use cases in the Application layer',
-            '   3. Implement infrastructure adapters as needed',
-        ]);
+        $io->text($config['successMessage'] ?? []);
 
         if (!$config['withSublayers']) {
             $io->newLine();
-            $io->note('Tip: Use --template=standard or --interactive next time for a more detailed structure.');
+            $io->note($config['tipMessage'] ?? 'Tip: Use templates for more detailed structures.');
         }
     }
 }

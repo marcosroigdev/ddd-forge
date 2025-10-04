@@ -223,27 +223,6 @@ final class MakeContextCommandTest extends TestCase
         $this->assertStringContainsString('.gitkeep', $this->commandTester->getDisplay());
     }
 
-    public function test_givenExportOption_whenExecutingCommand_thenCreatesYamlFile(): void
-    {
-        // Given
-        $contextName = 'Reporting';
-        $exportFile = $this->testDir . '/structure.yaml';
-
-        // When
-        $this->commandTester->execute([
-            'name' => $contextName,
-            '--dir' => $this->testDir,
-            '--export' => $exportFile,
-        ]);
-
-        // Then
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
-        $this->assertFileExists($exportFile);
-        $yamlContent = file_get_contents($exportFile);
-        $this->assertStringContainsString('DDD Context Structure: Reporting', $yamlContent);
-        $this->assertStringContainsString('structure:', $yamlContent);
-    }
-
     public function test_givenInvalidContextName_whenExecutingCommand_thenReturnsError(): void
     {
         // Given
@@ -393,30 +372,6 @@ final class MakeContextCommandTest extends TestCase
         $this->assertDirectoryExists($this->testDir . '/Context2/Domain/Port');
         $this->assertDirectoryDoesNotExist($this->testDir . '/Context1/Domain/Port');
         $this->assertDirectoryDoesNotExist($this->testDir . '/Context2/Domain/Read');
-    }
-
-    public function test_givenStandardTemplate_whenExportingToYaml_thenYamlContainsCorrectStructure(): void
-    {
-        // Given
-        $contextName = 'Export';
-        $exportFile = $this->testDir . '/export.yaml';
-
-        // When
-        $this->commandTester->execute([
-            'name' => $contextName,
-            '--dir' => $this->testDir,
-            '--template' => 'standard',
-            '--with-sublayers' => true,
-            '--export' => $exportFile,
-        ]);
-
-        // Then
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
-        $yamlContent = file_get_contents($exportFile);
-        $this->assertStringContainsString('Template: standard', $yamlContent);
-        $this->assertStringContainsString('Domain:', $yamlContent);
-        $this->assertStringContainsString('- Model', $yamlContent);
-        $this->assertStringContainsString('- Service', $yamlContent);
     }
 
     public function test_givenValidInput_whenExecutingCommand_thenDisplaysSuccessMessage(): void

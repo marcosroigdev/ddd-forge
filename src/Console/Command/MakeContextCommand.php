@@ -12,7 +12,6 @@ use DddForge\Scaffolding\InteractiveWizard;
 use DddForge\Scaffolding\PresetManager;
 use DddForge\Scaffolding\TemplateEngine;
 use DddForge\Scaffolding\YamlExporter;
-use DddForge\Support\Str;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,10 +20,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use InvalidArgumentException;
-use RuntimeException;
 
 #[AsCommand(
     name: 'make:context',
@@ -35,14 +31,14 @@ final class MakeContextCommand extends Command
     private array $customSublayers = [];
 
     public function __construct(
-        private PresetManager $presetManager,
-        private DirectoryStructureBuilder $structureBuilder,
-        private InteractiveWizard $wizard,
-        private YamlExporter $yamlExporter,
-        private DirectoryManager $directoryManager,
-        private InputValidator $validator,
-        private TemplateEngine $templateEngine,
-        private DryRunManager $dryRunManager
+        private readonly PresetManager $presetManager,
+        private readonly DirectoryStructureBuilder $structureBuilder,
+        private readonly InteractiveWizard $wizard,
+        private readonly YamlExporter $yamlExporter,
+        private readonly DirectoryManager $directoryManager,
+        private readonly InputValidator $validator,
+        private readonly TemplateEngine $templateEngine,
+        private readonly DryRunManager $dryRunManager
     ) {
         parent::__construct();
     }
@@ -105,7 +101,18 @@ final class MakeContextCommand extends Command
             return;
         }
 
-        $wizardResult = $this->wizard->run($io, $input);
+        $wizardConfig = [
+            'title' => 'Context Generator Wizard',
+            'description' => [
+                'Welcome to the DDD Context Generator!',
+                'This wizard will help you create a bounded context structure.',
+                'Answer a few questions to customize your context architecture.'
+            ],
+            'nameArgument' => 'name',
+            'namePrompt' => 'What is the name of your bounded context?'
+        ];
+
+        $wizardResult = $this->wizard->run($io, $input, $wizardConfig);
         $this->customSublayers = $wizardResult['customSublayers'];
     }
 
@@ -115,24 +122,47 @@ final class MakeContextCommand extends Command
 
         try {
             $config = $this->validator->parseInput($input);
+            $layers = $this->structureBuilder->getLayerPaths();
 
             $paths = $this->structureBuilder->build(
-                $config['contextName'],
+                $config['name'],
                 $config['baseDir'],
+                array_values($layers),
                 $config['withSublayers'],
                 $config['template'],
                 $this->customSublayers
             );
 
-            if ($exportFile = $input->getOption('export')) {
-                $this->yamlExporter->export($io, $paths, $config, $exportFile);
-            }
+            $scaffoldingConfig = [
+                'name' => $config['name'],
+                'type' => 'context',
+                'template' => $config['template'],
+                'force' => $config['force'],
+                'withSublayers' => $config['withSublayers'],
+                'baseDir' => $config['baseDir'],
+                'contextName' => $config['name'],
+                'successMessage' => [
+                    '🎉 Your bounded context is ready!',
+                    '',
+                    'Next steps:',
+                    '• Add your domain models in the Domain layer',
+                    '• Create application services in the Application layer',
+                    '• Implement infrastructure adapters',
+                    '• Build your user interface'
+                ],
+                'tipMessage' => 'Tip: Use --template=standard for more detailed structures.'
+            ];
 
             if ($config['dryRun']) {
-                return $this->dryRunManager->showDryRun($io, $paths, $config);
+                return $this->dryRunManager->showDryRun($io, $paths, $scaffoldingConfig);
             }
 
-            $result = $this->directoryManager->createDirectories($io, $paths, $config);
+            if ($exportFile = $input->getOption('export')) {
+                $exportPath = getcwd() . '/.ddd-forge/structure/' . ltrim($exportFile, '/');
+                $this->yamlExporter->export($io, $paths, $scaffoldingConfig, $exportPath);
+            }
+
+            $result = $this->directoryManager->createDirectories($io, $paths, $scaffoldingConfig);
 
             if ($result === Command::SUCCESS && $input->getOption('gitkeep')) {
                 $this->directoryManager->createGitkeepFiles($io, $paths);

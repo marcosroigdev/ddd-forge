@@ -15,7 +15,7 @@ final class DryRunManager
 
     public function showDryRun(SymfonyStyle $io, array $paths, array $config): int
     {
-        $io->title("🔍 Dry Run: {$config['contextName']} Context Structure");
+        $io->title("🔍 Dry Run: {$config['name']} {$config['type']} Structure");
 
         $templateInfo = $config['template']
             ? " (<info>{$config['template']}</info> template)"
@@ -24,11 +24,11 @@ final class DryRunManager
         $io->text("The following structure$templateInfo would be created:");
         $io->newLine();
 
-        $grouped = $this->structureBuilder->groupPathsByLayer($paths, $config['contextName']);
+        $grouped = $this->structureBuilder->groupPathsByLayer($paths, $config['name']);
 
         foreach ($grouped as $layer => $layerPaths) {
             if ($layer === 'root') {
-                $io->text("  📁 <info>{$config['contextName']}/</info>");
+                $io->text("  📁 <info>{$config['name']}/</info>");
             } else {
                 $io->text("  📂 <info>$layer/</info>");
                 foreach ($layerPaths as $path) {

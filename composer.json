@@ -1,6 +1,6 @@
 {
     "name": "marcosroigdev/ddd-forge",
-    "description": "Scaffolding tool for DDD & Hexagonal Architecture in PHP",
+    "description": "Scaffolding tool for DDD & Hexagonal Architecture. Generate contexts, aggregates, repositories, and command handlers — with Symfony & Laravel support.",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -13,7 +13,20 @@
     ],
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "keywords": ["php", "ddd", "hexagonal", "architecture", "scaffolding", "cli", "generator"],
+    "keywords": [
+        "php",
+        "ddd",
+        "hexagonal",
+        "architecture",
+        "cqrs",
+        "scaffolding",
+        "cli",
+        "generator",
+        "symfony",
+        "laravel",
+        "code-generation",
+        "clean-architecture"
+    ],
     "require": {
         "php": ">=8.2",
         "symfony/console": "^7.3",

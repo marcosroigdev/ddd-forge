@@ -13,17 +13,19 @@ use DddForge\Scaffolding\InteractiveWizard;
 use DddForge\Scaffolding\PresetManager;
 use DddForge\Scaffolding\TemplateEngine;
 use DddForge\Scaffolding\YamlExporter;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class MakeContextCommandFactory
 {
     public static function create(): MakeContextCommand
     {
-        $templateEngine = new TemplateEngine();
+        $filesystem = new Filesystem();
+        $templateEngine = new TemplateEngine('context');
         $structureBuilder = new DirectoryStructureBuilder($templateEngine);
-        $presetManager = new PresetManager();
+        $presetManager = new PresetManager($filesystem);
         $wizard = new InteractiveWizard($templateEngine, $structureBuilder);
-        $yamlExporter = new YamlExporter();
-        $directoryManager = new DirectoryManager();
+        $yamlExporter = new YamlExporter($filesystem);
+        $directoryManager = new DirectoryManager($filesystem);
         $validator = new InputValidator($templateEngine);
         $dryRunManager = new DryRunManager($structureBuilder);
 
