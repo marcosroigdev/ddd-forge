@@ -6,7 +6,7 @@ namespace DddForge\Console\Command\MakeContext;
 
 use DddForge\Exception\AssertionFailedException;
 
-enum ContextLayer : string
+enum ContextLayer: string
 {
     case DOMAIN = 'Domain';
     case APPLICATION = 'Application';

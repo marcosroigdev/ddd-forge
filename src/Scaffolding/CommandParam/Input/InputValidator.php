@@ -15,7 +15,8 @@ final class InputValidator
 
     public function __construct(
         private readonly TemplateEngine $templateEngine
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{

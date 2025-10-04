@@ -14,7 +14,8 @@ readonly class PresetManager
 
     public function __construct(
         private Filesystem $filesystem = new Filesystem()
-    ) {}
+    ) {
+    }
 
     /**
      * @param array{

@@ -18,7 +18,8 @@ final class DirectoryStructureBuilder
 
     public function __construct(
         private readonly TemplateEngine $templateEngine
-    ) {}
+    ) {
+    }
 
     /**
      * @param string[] $layers

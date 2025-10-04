@@ -15,7 +15,8 @@ readonly class InteractiveWizard
     public function __construct(
         private TemplateEngine $templateEngine,
         private DirectoryStructureBuilder $structureBuilder
-    ) {}
+    ) {
+    }
 
     /**
      * @param array{

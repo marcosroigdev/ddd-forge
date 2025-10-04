@@ -15,7 +15,8 @@ readonly class DirectoryManager
 
     public function __construct(
         private Filesystem $filesystem
-    ) {}
+    ) {
+    }
 
     /**
      * @param string[] $paths

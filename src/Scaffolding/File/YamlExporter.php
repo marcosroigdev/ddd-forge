@@ -12,7 +12,8 @@ readonly class YamlExporter
 {
     public function __construct(
         private Filesystem $filesystem = new Filesystem()
-    ) {}
+    ) {
+    }
 
     /**
      * @param string[] $paths

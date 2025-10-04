@@ -12,7 +12,8 @@ final class DryRunManager
 {
     public function __construct(
         private readonly DirectoryStructureBuilder $structureBuilder
-    ) {}
+    ) {
+    }
 
     /**
      * @param string[] $paths

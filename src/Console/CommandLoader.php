@@ -50,9 +50,11 @@ final class CommandLoader
             }
 
             $relativePath = $this->getRelativePath($file);
-            $class        = self::BASE_NS . str_replace([DIRECTORY_SEPARATOR, self::DOT . self::PHP_EXTENSION_KEY],
-                    ['\\', ''],
-                    $relativePath);
+            $class        = self::BASE_NS . str_replace(
+                [DIRECTORY_SEPARATOR, self::DOT . self::PHP_EXTENSION_KEY],
+                ['\\', ''],
+                $relativePath
+            );
 
             if (!class_exists($class)) {
                 continue;
