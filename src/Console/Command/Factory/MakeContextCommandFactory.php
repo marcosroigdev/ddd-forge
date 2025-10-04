@@ -20,7 +20,7 @@ final class MakeContextCommandFactory
     public static function create(): MakeContextCommand
     {
         $filesystem = new Filesystem();
-        $templateEngine = new TemplateEngine('context');
+        $templateEngine = new TemplateEngine();
         $structureBuilder = new DirectoryStructureBuilder($templateEngine);
         $presetManager = new PresetManager($filesystem);
         $wizard = new InteractiveWizard($templateEngine, $structureBuilder);

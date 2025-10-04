@@ -17,6 +17,18 @@ readonly class DirectoryManager
         private Filesystem $filesystem
     ) {}
 
+    /**
+     * @param string[] $paths
+     * @param array{
+     *     name: string,
+     *     type: string,
+     *     template: string|null,
+     *     force: bool,
+     *     successMessage?: string|string[],
+     *     withSublayers?: bool,
+     *     tipMessage?: string
+     * } $config
+     */
     public function createDirectories(SymfonyStyle $io, array $paths, array $config): int
     {
         $created = 0;
@@ -48,6 +60,9 @@ readonly class DirectoryManager
         return Command::SUCCESS;
     }
 
+    /**
+     * @param string[] $paths
+     */
     public function createGitkeepFiles(SymfonyStyle $io, array $paths): void
     {
         $created = 0;
@@ -72,6 +87,16 @@ readonly class DirectoryManager
         $io->text('  These files ensure empty directories are tracked by Git.');
     }
 
+    /**
+     * @param array{
+     *     name: string,
+     *     type: string,
+     *     template: string|null,
+     *     successMessage?: string|string[],
+     *     withSublayers?: bool,
+     *     tipMessage?: string
+     * } $config
+     */
     private function showSummary(SymfonyStyle $io, array $config, int $created, int $skipped): void
     {
         $templateInfo = $config['template'] ? " using {$config['template']} template" : '';
@@ -92,7 +117,7 @@ readonly class DirectoryManager
         $io->newLine();
         $io->text($config['successMessage'] ?? []);
 
-        if (!$config['withSublayers']) {
+        if (!($config['withSublayers'] ?? false)) {
             $io->newLine();
             $io->note($config['tipMessage'] ?? 'Tip: Use templates for more detailed structures.');
         }

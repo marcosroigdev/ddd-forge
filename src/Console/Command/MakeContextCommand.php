@@ -28,6 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class MakeContextCommand extends Command
 {
+    /** @var array<string, string[]> */
     private array $customSublayers = [];
 
     public function __construct(
@@ -202,7 +203,7 @@ final class MakeContextCommand extends Command
                 $input->setOption('with-sublayers', true);
             }
 
-            if (!empty($presetData['customSublayers']) && is_array($presetData['customSublayers'])) {
+            if (!empty($presetData['customSublayers'])) {
                 $this->customSublayers = $presetData['customSublayers'];
                 $input->setOption('with-sublayers', true);
             }

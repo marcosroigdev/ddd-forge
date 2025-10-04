@@ -14,6 +14,14 @@ final class DryRunManager
         private readonly DirectoryStructureBuilder $structureBuilder
     ) {}
 
+    /**
+     * @param string[] $paths
+     * @param array{
+     *     name: string,
+     *     type: string,
+     *     template: string|null
+     * } $config
+     */
     public function showDryRun(SymfonyStyle $io, array $paths, array $config): int
     {
         $io->title("🔍 Dry Run: {$config['name']} {$config['type']} Structure");

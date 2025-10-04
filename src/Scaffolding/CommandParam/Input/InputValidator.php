@@ -17,6 +17,16 @@ final class InputValidator
         private readonly TemplateEngine $templateEngine
     ) {}
 
+    /**
+     * @return array{
+     *     name: string,
+     *     baseDir: string,
+     *     force: bool,
+     *     dryRun: bool,
+     *     withSublayers: bool,
+     *     template: string|null
+     * }
+     */
     public function parseInput(InputInterface $input, string $nameArgument = 'name'): array
     {
         $rawName = (string) $input->getArgument($nameArgument);

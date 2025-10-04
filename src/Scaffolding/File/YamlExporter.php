@@ -14,6 +14,16 @@ readonly class YamlExporter
         private Filesystem $filesystem = new Filesystem()
     ) {}
 
+    /**
+     * @param string[] $paths
+     * @param array{
+     *     name: string,
+     *     type: string,
+     *     template: string|null,
+     *     baseDir: string,
+     *     contextName: string
+     * } $config
+     */
     public function export(SymfonyStyle $io, array $paths, array $config, string $filename): void
     {
         $yamlContent = $this->buildYamlStructure($paths, $config);
@@ -26,9 +36,20 @@ readonly class YamlExporter
         }
     }
 
+    /**
+     * @param string[] $paths
+     * @param array{
+     *     name: string,
+     *     type: string,
+     *     template: string|null,
+     *     baseDir: string,
+     *     contextName: string
+     * } $config
+     * @return string
+     */
     private function buildYamlStructure(array $paths, array $config): string
     {
-        $type = $config['type'] ?? 'Structure';
+        $type = $config['type'];
         $yaml = "# {$type}: {$config['name']}\n";
         $yaml .= "# Generated: " . date('Y-m-d H:i:s') . "\n";
         $yaml .= "# Template: " . ($config['template'] ?? 'custom') . "\n\n";

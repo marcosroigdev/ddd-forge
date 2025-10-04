@@ -16,6 +16,14 @@ readonly class PresetManager
         private Filesystem $filesystem = new Filesystem()
     ) {}
 
+    /**
+     * @param array{
+     *     template: string|null,
+     *     withSublayers: bool,
+     *     baseDir: string
+     * } $config
+     * @param array<string, string[]> $customSublayers
+     */
     public function save(string $name, array $config, array $customSublayers): void
     {
         $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
@@ -43,6 +51,16 @@ readonly class PresetManager
         $this->filesystem->dumpFile($presetFile, $jsonContent);
     }
 
+    /**
+     * @return array{
+     *     name: string,
+     *     template: string|null,
+     *     withSublayers: bool,
+     *     baseDir: string,
+     *     customSublayers: array<string, string[]>,
+     *     createdAt: string
+     * }
+     */
     public function load(string $name): array
     {
         $presetFile = getcwd() . '/' . self::PRESETS_DIR . '/' . $name . '.json';
@@ -57,10 +75,23 @@ readonly class PresetManager
         }
 
         $presetData = json_decode($fileContents, true);
-        if (!is_array($presetData)) {
+        if (
+            !is_array($presetData) ||
+            !isset($presetData['name'], $presetData['template'], $presetData['withSublayers'], $presetData['baseDir'], $presetData['customSublayers'], $presetData['createdAt']) ||
+            !is_array($presetData['customSublayers'])
+        ) {
             throw new RuntimeException("Invalid preset file: $presetFile");
         }
 
+        /** @var array{
+         *     name: string,
+         *     template: string|null,
+         *     withSublayers: bool,
+         *     baseDir: string,
+         *     customSublayers: array<string, string[]>,
+         *     createdAt: string
+         * } $presetData
+         */
         return $presetData;
     }
 

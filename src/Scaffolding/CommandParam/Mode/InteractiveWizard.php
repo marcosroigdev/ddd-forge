@@ -17,7 +17,18 @@ readonly class InteractiveWizard
         private DirectoryStructureBuilder $structureBuilder
     ) {}
 
-
+    /**
+     * @param array{
+     *     title: string,
+     *     description?: string|string[],
+     *     nameArgument?: string,
+     *     namePrompt?: string,
+     * } $config
+     * @return array{
+     *     customSublayers: array<string, string[]>,
+     *     selectedTemplate: string
+     * }
+     */
     public function run(SymfonyStyle $io, InputInterface $input, array $config): array
     {
         $io->title("🏗️  {$config['title']}");
@@ -97,6 +108,9 @@ readonly class InteractiveWizard
         ];
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public function configureCustomSublayers(SymfonyStyle $io): array
     {
         $io->text('Configure sublayers for each main layer. Leave empty to skip a layer.');
@@ -136,6 +150,9 @@ readonly class InteractiveWizard
         return $customSublayers;
     }
 
+    /**
+     * @return string[]
+     */
     private function getSuggestionsForLayer(string $layerName): array
     {
         return match($layerName) {

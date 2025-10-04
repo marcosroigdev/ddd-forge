@@ -54,6 +54,13 @@ final class TemplateEngine
         ],
     ];
 
+    /**
+     * @return array{
+     *     name: string,
+     *     description: string,
+     *     sublayers: array<string, string[]>
+     * }|null
+     */
     public function getTemplate(string $name): ?array
     {
         return self::TEMPLATES[$name] ?? null;
@@ -64,6 +71,9 @@ final class TemplateEngine
         return isset(self::TEMPLATES[$template]);
     }
 
+    /**
+     * @return string[]
+     */
     public function getTemplateNames(): array
     {
         return array_keys(self::TEMPLATES);
@@ -78,6 +88,9 @@ final class TemplateEngine
         return implode(PHP_EOL, $help);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getTemplateChoices(): array
     {
         $choices = ['custom' => 'Custom (I\'ll choose my own sublayers)'];

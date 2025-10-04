@@ -20,6 +20,11 @@ final class DirectoryStructureBuilder
         private readonly TemplateEngine $templateEngine
     ) {}
 
+    /**
+     * @param string[] $layers
+     * @param array<string, string[]> $customSublayers
+     * @return string[]
+     */
     public function build(
         string $name,
         string $baseDir,
@@ -48,6 +53,11 @@ final class DirectoryStructureBuilder
         return $paths;
     }
 
+    /**
+     * @param array<string, string[]> $customSublayers
+     * @param string[] $defaultLayers
+     * @return array<string, string[]>
+     */
     public function resolveSublayers(?string $template, array $customSublayers = [], array $defaultLayers = []): array
     {
         if (!empty($customSublayers)) {
@@ -62,11 +72,18 @@ final class DirectoryStructureBuilder
         return [];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getLayerPaths(): array
     {
         return self::LAYER_PATHS;
     }
 
+    /**
+     * @param string[] $paths
+     * @return array<string, string[]>
+     */
     public function groupPathsByLayer(array $paths, string $name): array
     {
         $grouped = ['root' => []];
