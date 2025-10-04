@@ -13,7 +13,6 @@ final class CommandLoaderTest extends TestCase
     {
         $app = new Application();
 
-        $this->assertTrue($app->has('init'));
         $this->assertTrue($app->has('make:context'));
     }
 }

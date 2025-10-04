@@ -9,7 +9,7 @@
 
 
 **DDD-Forge** is a scaffolding tool for **Domain-Driven Design** and **Hexagonal Architecture** in PHP.  
-Generate clean code, bounded contexts, aggregates, value objects, and use cases with a single command.
+Generate contexts, aggregates, repositories, and command handlers with a single command— with Symfony & Laravel support.
 
 🚧 **Work in Progress** – expect rapid changes.
 
@@ -17,10 +17,10 @@ Generate clean code, bounded contexts, aggregates, value objects, and use cases 
 
 ## ✨ Features
 
-- ✅ Initialize hexagonal project structure (`init`)
-- ⏳ Generate bounded contexts (`make:context`)
-- ⏳ Create aggregates, value objects and domain events
-- ⏳ Generate use cases and ports
+- ⏳ Generate bounded contexts
+- ⏳ Generate aggregates, value objects and domain events
+- ⏳ Generate repositories
+- ⏳ Generate CQRS commands
 - ⏳ Symfony & Laravel recipes
 - ⏳ Test scaffolding
 
@@ -36,30 +36,17 @@ composer require --dev marcosroigdev/ddd-forge
 
 Requires PHP >= 8.2.
 
-## 📦 Usage
+## 📦 Usage example
 
 Run the CLI:
 
 ```bash
 # Using composer script
-composer run forge -- init
+composer run forge make:context
 
 # Or directly
-bin/ddd-forge init
+bin/ddd-forge make:context
 
-```
-
-This will generate the base folder structure:
-```
-src/
-├── Domain
-│   └── (Aggregates, ValueObjects, DomainEvents)
-├── Application
-│   └── (UseCases, Ports)
-├── Infrastructure
-│   └── (Repositories, Adapters)
-└── UI
-└── (CLI, HTTP, etc.)
 ```
 
 ## 🤝 Contributing

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace DddForge\Console\Command\Factory;
 
 use DddForge\Console\Command\MakeContextCommand;
-use DddForge\Scaffolding\DirectoryManager;
-use DddForge\Scaffolding\DirectoryStructureBuilder;
-use DddForge\Scaffolding\DryRunManager;
-use DddForge\Scaffolding\InputValidator;
-use DddForge\Scaffolding\InteractiveWizard;
-use DddForge\Scaffolding\PresetManager;
-use DddForge\Scaffolding\TemplateEngine;
-use DddForge\Scaffolding\YamlExporter;
+use DddForge\Scaffolding\CommandParam\Input\InputValidator;
+use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
+use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
+use DddForge\Scaffolding\Directory\DirectoryManager;
+use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
+use DddForge\Scaffolding\File\PresetManager;
+use DddForge\Scaffolding\File\YamlExporter;
+use DddForge\Scaffolding\Template\TemplateEngine;
 use Symfony\Component\Filesystem\Filesystem;
 
 final class MakeContextCommandFactory

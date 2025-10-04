@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace DddForge\Console\Command;
 
-use DddForge\Scaffolding\DirectoryManager;
-use DddForge\Scaffolding\DirectoryStructureBuilder;
-use DddForge\Scaffolding\DryRunManager;
-use DddForge\Scaffolding\InputValidator;
-use DddForge\Scaffolding\InteractiveWizard;
-use DddForge\Scaffolding\PresetManager;
-use DddForge\Scaffolding\TemplateEngine;
-use DddForge\Scaffolding\YamlExporter;
+use DddForge\Scaffolding\CommandParam\Input\InputValidator;
+use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
+use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
+use DddForge\Scaffolding\Directory\DirectoryManager;
+use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
+use DddForge\Scaffolding\File\PresetManager;
+use DddForge\Scaffolding\File\YamlExporter;
+use DddForge\Scaffolding\Template\TemplateEngine;
 use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,7 +21,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use InvalidArgumentException;
 
 #[AsCommand(
     name: 'make:context',
