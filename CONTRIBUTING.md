@@ -55,14 +55,10 @@ composer run qa
 
 ## 📦 CLI Development
 
-Fix coding style automatically:
+Run ddd-forge command:
 ```bash
 make forge
 ```
-
-Fix coding style automatically:
-```bash
-composer run forge -- init
 ```
 
 ## ✅ Commit Messages
