@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DddForge\Console;
 
+use DddForge\Console\Command\Factory\MakeContextCommandFactory;
+use DddForge\Console\Command\MakeContextCommand;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -17,7 +19,11 @@ final class CommandLoader
 {
     private const BASE_NS           = 'DddForge\\Console\\Command\\';
     private const PHP_EXTENSION_KEY = 'php';
-    private const DOT = '.';
+    private const DOT               = '.';
+
+    private const FACTORY_COMMANDS = [
+        MakeContextCommand::class,
+    ];
 
     private string $commandsDir;
 
@@ -35,6 +41,8 @@ final class CommandLoader
             return;
         }
 
+        $app->add(MakeContextCommandFactory::create());
+
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->commandsDir));
         foreach ($iterator as $file) {
             if (!$file->isFile() || $file->getExtension() !== self::PHP_EXTENSION_KEY) {
@@ -42,13 +50,19 @@ final class CommandLoader
             }
 
             $relativePath = $this->getRelativePath($file);
-            $class        = self::BASE_NS . str_replace([DIRECTORY_SEPARATOR, self::DOT.self::PHP_EXTENSION_KEY], ['\\', ''], $relativePath);
+            $class        = self::BASE_NS . str_replace([DIRECTORY_SEPARATOR, self::DOT . self::PHP_EXTENSION_KEY],
+                    ['\\', ''],
+                    $relativePath);
 
             if (!class_exists($class)) {
                 continue;
             }
 
             if (!is_subclass_of($class, Command::class)) {
+                continue;
+            }
+
+            if (in_array($class, self::FACTORY_COMMANDS, true)) {
                 continue;
             }
 

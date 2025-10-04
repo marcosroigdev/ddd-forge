@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Tests\Console\Command;
 
-use DddForge\Console\Command\MakeContextCommand;
+use DddForge\Console\Command\Factory\MakeContextCommandFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -22,7 +22,7 @@ final class MakeContextCommandTest extends TestCase
         $this->testDir = sys_get_temp_dir() . '/ddd-forge-test-' . uniqid();
 
         $application = new Application();
-        $application->add(new MakeContextCommand());
+        $application->add(MakeContextCommandFactory::create());
         $command = $application->find('make:context');
         $this->commandTester = new CommandTester($command);
     }

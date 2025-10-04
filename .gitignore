@@ -29,3 +29,6 @@
 
 # Logs
 *.log
+
+# ddd-forge
+/.ddd-forge
