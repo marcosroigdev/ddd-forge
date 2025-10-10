@@ -18,6 +18,9 @@ readonly class PresetManager
     ) {
     }
 
+    /**
+     * @param array<string, string[]> $customSubLayers
+     */
     public function save(string $name, ContextConfigData $config, array $customSubLayers): void
     {
         $presetsDir = getcwd() . '/' . self::PRESETS_DIR;

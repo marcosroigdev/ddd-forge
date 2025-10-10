@@ -7,6 +7,9 @@ namespace DddForge\Scaffolding\Template;
 use DddForge\Support\Collection\StringCollection;
 use DddForge\Support\Collection\TypedCollection;
 
+/**
+ * @extends TypedCollection<Template>
+ */
 class TemplateCollection extends TypedCollection
 {
     protected function type(): string

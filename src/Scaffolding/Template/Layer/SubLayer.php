@@ -11,6 +11,9 @@ readonly class SubLayer
     ) {
     }
 
+    /**
+     * @return array{name: string}
+     */
     public function toArray(): array
     {
         return [

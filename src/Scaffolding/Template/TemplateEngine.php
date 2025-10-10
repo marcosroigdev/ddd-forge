@@ -129,6 +129,9 @@ final class TemplateEngine
         );
     }
 
+    /**
+     * @param array<string, string[]> $layerItems
+     */
     private function getLayerCollection(array $layerItems): LayerCollection
     {
         $layerCollection = LayerCollection::createEmpty();
@@ -147,6 +150,9 @@ final class TemplateEngine
         return $layerCollection;
     }
 
+    /**
+     * @param string[] $sublayerItems
+     */
     private function getSubLayerCollection(array $sublayerItems): SublayerCollection
     {
         $sublayerCollection = SublayerCollection::createEmpty();

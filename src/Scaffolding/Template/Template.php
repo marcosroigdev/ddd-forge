@@ -8,6 +8,9 @@ use DddForge\Scaffolding\Template\Layer\Layer;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Support\Contracts\Arrayable;
 
+/**
+ * @implements Arrayable<array{name: string, description: string, layers: array<array{name: string, subLayers: array<array<string, mixed>>}>}>
+ */
 readonly class Template implements Arrayable
 {
     public function __construct(
@@ -17,6 +20,9 @@ readonly class Template implements Arrayable
     ) {
     }
 
+    /**
+     * @return array{name: string, description: string, layers: array<array{name: string, subLayers: array<array<string, mixed>>}>}
+     */
     public function toArray(): array
     {
         return [

@@ -6,6 +6,9 @@ namespace DddForge\Scaffolding\Template\Layer;
 
 use DddForge\Support\Collection\TypedCollection;
 
+/**
+ * @extends TypedCollection<SubLayer>
+ */
 class SubLayerCollection extends TypedCollection
 {
     protected function type(): string

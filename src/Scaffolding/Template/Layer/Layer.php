@@ -17,6 +17,9 @@ readonly class Layer implements Arrayable
     ) {
     }
 
+    /**
+     * @return array{name: string, subLayers: array<array<string, mixed>>}
+     */
     public function toArray(): array
     {
         return [
