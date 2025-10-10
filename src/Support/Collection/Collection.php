@@ -44,6 +44,11 @@ abstract class Collection implements Arrayable
         return new static([]);
     }
 
+    public function add(mixed $item): void
+    {
+        $this->items[] = $item;
+    }
+
     /**
      * @return T[]
      */
