@@ -18,7 +18,7 @@ abstract class TypedCollection extends Collection
 
         array_walk(
             $items,
-            function (mixed $item) use($expectedType) {
+            function (mixed $item) use ($expectedType) {
                 if (!$this->isValidType($item, $expectedType)) {
                     throw InvalidCollectionTypeException::becauseTypeIsInvalid(
                         $expectedType,
