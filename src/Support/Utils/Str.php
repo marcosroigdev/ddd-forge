@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DddForge\Support;
+namespace DddForge\Support\Utils;
 
 final class Str
 {

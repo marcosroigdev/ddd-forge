@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\File;
 
+use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
 use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -17,15 +18,7 @@ readonly class PresetManager
     ) {
     }
 
-    /**
-     * @param array{
-     *     template: string|null,
-     *     withSublayers: bool,
-     *     baseDir: string
-     * } $config
-     * @param array<string, string[]> $customSublayers
-     */
-    public function save(string $name, array $config, array $customSublayers): void
+    public function save(string $name, ContextConfigData $config, array $customSubLayers): void
     {
         $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
 
@@ -35,10 +28,10 @@ readonly class PresetManager
 
         $presetData = [
             'name' => $name,
-            'template' => $config['template'],
-            'withSublayers' => $config['withSublayers'],
-            'baseDir' => $config['baseDir'],
-            'customSublayers' => $customSublayers,
+            'template' => $config->template,
+            'withSublayers' => $config->withSubLayers,
+            'baseDir' => $config->baseDir,
+            'customSublayers' => $customSubLayers,
             'createdAt' => date('Y-m-d H:i:s'),
         ];
 

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace DddForge\Console\Command;
 
-use DddForge\Scaffolding\CommandParam\Input\InputValidator;
+use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
+use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
+use DddForge\Scaffolding\CommandParam\Input\InputNameValidator;
 use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
 use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
 use DddForge\Scaffolding\Directory\DirectoryManager;
@@ -12,6 +14,7 @@ use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
 use DddForge\Scaffolding\File\PresetManager;
 use DddForge\Scaffolding\File\YamlExporter;
 use DddForge\Scaffolding\Template\TemplateEngine;
+use DddForge\Support\Utils\Str;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -28,6 +31,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class MakeContextCommand extends Command
 {
+    private const DIRECTORY_SEPARATOR = '/';
+
     /** @var array<string, string[]> */
     private array $customSublayers = [];
 
@@ -37,7 +42,7 @@ final class MakeContextCommand extends Command
         private readonly InteractiveWizard $wizard,
         private readonly YamlExporter $yamlExporter,
         private readonly DirectoryManager $directoryManager,
-        private readonly InputValidator $validator,
+        private readonly InputTemplateValidator $inputTemplateValidator,
         private readonly TemplateEngine $templateEngine,
         private readonly DryRunManager $dryRunManager
     ) {
@@ -52,7 +57,7 @@ final class MakeContextCommand extends Command
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force creation even if directories already exist')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show what would be created without actually creating directories')
             ->addOption('with-sublayers', 's', InputOption::VALUE_NONE, 'Create detailed sublayers within each main layer')
-            ->addOption('template', 't', InputOption::VALUE_OPTIONAL, 'Use a predefined template: ' . implode(', ', $this->templateEngine->getTemplateNames()))
+            ->addOption('template', 't', InputOption::VALUE_OPTIONAL, sprintf('Use a predefined template: %s', implode(', ', $this->templateEngine->getTemplateNames()->toArray())))
             ->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Run in interactive mode with wizard')
             ->addOption('save-preset', null, InputOption::VALUE_OPTIONAL, 'Save current configuration as a reusable preset')
             ->addOption('use-preset', 'p', InputOption::VALUE_OPTIONAL, 'Use a saved preset configuration')
@@ -122,26 +127,29 @@ final class MakeContextCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $config = $this->validator->parseInput($input);
+            InputNameValidator::validate($input);
+            $this->inputTemplateValidator->validate($input);
+
+            $config = $this->getConfigContextData($input);
             $layers = $this->structureBuilder->getLayerPaths();
 
             $paths = $this->structureBuilder->build(
-                $config['name'],
-                $config['baseDir'],
+                $config->name,
+                $config->baseDir,
                 array_values($layers),
-                $config['withSublayers'],
-                $config['template'],
+                $config->withSubLayers,
+                $config->template,
                 $this->customSublayers
             );
 
             $scaffoldingConfig = [
-                'name' => $config['name'],
+                'name' => $config->name,
                 'type' => 'context',
-                'template' => $config['template'],
-                'force' => $config['force'],
-                'withSublayers' => $config['withSublayers'],
-                'baseDir' => $config['baseDir'],
-                'contextName' => $config['name'],
+                'template' => $config->template,
+                'force' => $config->force,
+                'withSublayers' => $config->withSubLayers,
+                'baseDir' => $config->baseDir,
+                'contextName' => $config->name,
                 'successMessage' => [
                     '🎉 Your bounded context is ready!',
                     '',
@@ -154,7 +162,7 @@ final class MakeContextCommand extends Command
                 'tipMessage' => 'Tip: Use --template=standard for more detailed structures.'
             ];
 
-            if ($config['dryRun']) {
+            if ($config->dryRun) {
                 return $this->dryRunManager->showDryRun($io, $paths, $scaffoldingConfig);
             }
 
@@ -219,5 +227,17 @@ final class MakeContextCommand extends Command
             $io->error($e->getMessage());
             exit(Command::INVALID);
         }
+    }
+
+    private function getConfigContextData(InputInterface $input): ContextConfigData
+    {
+        return new ContextConfigData(
+            Str::studly(trim((string) $input->getArgument('name'))),
+            rtrim((string) $input->getOption('dir'), self::DIRECTORY_SEPARATOR),
+            (bool) $input->getOption('force'),
+            (bool) $input->getOption('dry-run'),
+            (bool) $input->getOption('with-sublayers'),
+            $input->getOption('template')
+        );
     }
 }

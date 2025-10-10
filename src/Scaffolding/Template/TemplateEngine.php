@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\Template;
 
+use DddForge\Support\Collection\StringCollection;
+
 final class TemplateEngine
 {
     private const TEMPLATES = [
@@ -71,12 +73,9 @@ final class TemplateEngine
         return isset(self::TEMPLATES[$template]);
     }
 
-    /**
-     * @return string[]
-     */
-    public function getTemplateNames(): array
+    public function getTemplateNames(): StringCollection
     {
-        return array_keys(self::TEMPLATES);
+        return StringCollection::create(array_keys(self::TEMPLATES));
     }
 
     public function buildTemplateHelp(): string
