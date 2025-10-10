@@ -12,7 +12,9 @@ use DddForge\Support\Collection\StringCollection;
 
 final class TemplateEngine
 {
-    private const TEMPLATES = [
+    private const         CUSTOM_TEMPLATE_DESCRIPTION = 'Custom (I\'ll choose my own sublayers)';
+    private const         CUSTOM_TEMPLATE_NAME        = 'custom';
+    private const         TEMPLATES                   = [
         'basic'          => [
             'name'        => 'Basic DDD (Main layers only)',
             'description' => 'Creates only the 4 main DDD layers without sublayers',
@@ -91,16 +93,9 @@ final class TemplateEngine
         return implode(PHP_EOL, $help);
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getTemplateChoices(): array
+    public function getTemplateChoices(): StringCollection
     {
-        $choices = ['custom' => 'Custom (I\'ll choose my own sublayers)'];
-        foreach (self::TEMPLATES as $key => $template) {
-            $choices[$key] = $template['name'];
-        }
-        return $choices;
+        return $this->getTemplateCollection()->getTemplatesNames();
     }
 
     public function getTemplateCollection(): TemplateCollection
@@ -128,9 +123,9 @@ final class TemplateEngine
     private function getCustomTemplate(): Template
     {
         return new Template(
-            'custom',
+            self::CUSTOM_TEMPLATE_NAME,
             LayerCollection::createEmpty(),
-            'Custom (I\'ll choose my own sublayers)'
+            self::CUSTOM_TEMPLATE_DESCRIPTION
         );
     }
 

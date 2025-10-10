@@ -66,7 +66,10 @@ readonly class InteractiveWizard
         $templateChoices = $this->templateEngine->getTemplateChoices();
         $selectedTemplate = $io->choice(
             'Choose your context architecture',
-            $templateChoices,
+            array_map(
+                fn (string $choice) => $choice,
+                $templateChoices->toArray()
+            ),
             'standard'
         );
 
