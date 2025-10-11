@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DddForge\Scaffolding\CommandParam\Mode;
 
 use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
+use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\TemplateEngine;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,19 +19,7 @@ readonly class InteractiveWizard
     ) {
     }
 
-    /**
-     * @param array{
-     *     title: string,
-     *     description?: string|string[],
-     *     nameArgument?: string,
-     *     namePrompt?: string,
-     * } $config
-     * @return array{
-     *     customSublayers: array<string, string[]>,
-     *     selectedTemplate: string
-     * }
-     */
-    public function run(SymfonyStyle $io, InputInterface $input, array $config): array
+    public function run(SymfonyStyle $io, InputInterface $input, array $config): LayerCollection
     {
         $io->title("🏗️  {$config['title']}");
         $io->text($config['description'] ?? []);
@@ -106,16 +95,11 @@ readonly class InteractiveWizard
 
         $io->newLine();
 
-        return [
-            'customSublayers' => $customSublayers,
-            'selectedTemplate' => $selectedTemplate
-        ];
+        return $customSublayers;
     }
 
-    /**
-     * @return array<string, string[]>
-     */
-    public function configureCustomSublayers(SymfonyStyle $io): array
+
+    public function configureCustomSublayers(SymfonyStyle $io): LayerCollection
     {
         $io->text('Configure sublayers for each main layer. Leave empty to skip a layer.');
         $io->newLine();
@@ -151,7 +135,7 @@ readonly class InteractiveWizard
             $io->newLine();
         }
 
-        return $customSublayers;
+        return LayerCollection::fromArray($customSublayers);
     }
 
     /**

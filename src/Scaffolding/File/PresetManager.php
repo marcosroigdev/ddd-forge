@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DddForge\Scaffolding\File;
 
 use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
+use DddForge\Scaffolding\Template\Layer\Layer;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
+use DddForge\Scaffolding\Template\Layer\SubLayer;
 use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -29,10 +31,10 @@ readonly class PresetManager
 
         $presetData = [
             'name' => $name,
-            'template' => $config->template,
+            'template' => $config->templateExists() ? $config->template : 'custom',
             'withSublayers' => $config->withSubLayers,
             'baseDir' => $config->baseDir,
-            'customSublayers' => $customSubLayers,
+            'customSublayers' => $this->formatPresetLayers($customSubLayers),
             'createdAt' => date('Y-m-d H:i:s'),
         ];
 
@@ -70,6 +72,7 @@ readonly class PresetManager
         }
 
         $presetData = json_decode($fileContents, true);
+
         if (
             !is_array($presetData) ||
             !isset($presetData['name'], $presetData['template'], $presetData['withSublayers'], $presetData['baseDir'], $presetData['customSublayers'], $presetData['createdAt']) ||
@@ -156,5 +159,16 @@ readonly class PresetManager
     {
         $presetFile = getcwd() . '/' . self::PRESETS_DIR . '/' . $name . '.json';
         return file_exists($presetFile);
+    }
+
+    private function formatPresetLayers(LayerCollection $customSubLayers): array
+    {
+        $result = [];
+
+        foreach ($customSubLayers->toArray() as $customSubLayer) {
+            $result[$customSubLayer->name] = array_map(fn (SubLayer $subLayer) => $subLayer->name, $customSubLayer->subLayers->toArray());
+        }
+
+        return $result;
     }
 }

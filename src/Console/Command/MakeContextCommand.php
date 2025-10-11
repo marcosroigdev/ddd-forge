@@ -119,9 +119,7 @@ final class MakeContextCommand extends Command
             'namePrompt' => 'What is the name of your bounded context?'
         ];
 
-        $wizardResult = $this->wizard->run($io, $input, $wizardConfig);
-
-        $this->customSublayers = $wizardResult['selectedTemplate'] === 'custom' ? LayerCollection::fromArray($wizardResult['customSublayers']) : $wizardResult['customSublayers'];
+        $this->customSublayers = $this->wizard->run($io, $input, $wizardConfig);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -214,7 +212,7 @@ final class MakeContextCommand extends Command
             }
 
             if (!empty($presetData['customSublayers'])) {
-                $this->customSublayers = $presetData['customSublayers'];
+                $this->customSublayers = LayerCollection::fromArray($presetData['customSublayers']);
                 $input->setOption('with-sublayers', true);
             }
 

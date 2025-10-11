@@ -15,4 +15,9 @@ readonly class ContextConfigData
         public ?string $template = null
     ) {
     }
+
+    public function templateExists(): bool
+    {
+        return !is_null($this->template);
+    }
 }
