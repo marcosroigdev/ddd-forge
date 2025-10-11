@@ -31,7 +31,7 @@ class TemplateCollection extends TypedCollection
     public function findByNameOrFail(string $name): Template
     {
         foreach ($this->items as $template) {
-            if($template->name === $name) {
+            if ($template->name === $name) {
                 return $template;
             }
         }
