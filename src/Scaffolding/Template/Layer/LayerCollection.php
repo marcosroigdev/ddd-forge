@@ -18,6 +18,9 @@ class LayerCollection extends TypedCollection
         return Layer::class;
     }
 
+    /**
+     * @param array<string, array<string>> $layers
+     */
     public static function fromArray(array $layers): LayerCollection
     {
         $layerCollection = LayerCollection::createEmpty();
@@ -50,6 +53,9 @@ class LayerCollection extends TypedCollection
         }
     }
 
+    /**
+     * @param mixed $subLayers
+     */
     private static function validateSubLayers(mixed $subLayers): void
     {
         if (!is_array($subLayers)) {
@@ -67,6 +73,9 @@ class LayerCollection extends TypedCollection
         }
     }
 
+    /**
+     * @param array<string> $subLayers
+     */
     private static function createSubLayerCollection(array $subLayers): SubLayerCollection
     {
         $subLayerCollection = SubLayerCollection::createEmpty();

@@ -22,6 +22,10 @@ final class DirectoryStructureBuilder
     ) {
     }
 
+    /**
+     * @param string[] $layers
+     * @return string[]
+     */
     public function build(
         string $name,
         string $baseDir,
@@ -37,16 +41,13 @@ final class DirectoryStructureBuilder
             $paths[] = $root . $layerPath;
         }
         if ($withSublayers) {
+            $layerCollection = $customSublayers;
 
-            if ($template) {
-                $layers = $this->getTemplateLayers($template);
+            if ($template && $layerCollection->isEmpty()) {
+                $layerCollection = $this->getTemplateLayers($template);
             }
 
-            if (!$customSublayers->isEmpty()) {
-                $layers = $customSublayers;
-            }
-
-            foreach ($layers->toArray() as $layer) {
+            foreach ($layerCollection->toArray() as $layer) {
                 foreach ($layer->subLayers->toArray() as $sublayer) {
                     $paths[] = $root . '/' . $layer->name . '/' . $sublayer->name;
                 }

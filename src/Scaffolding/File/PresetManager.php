@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DddForge\Scaffolding\File;
 
 use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
-use DddForge\Scaffolding\Template\Layer\Layer;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\Layer\SubLayer;
 use RuntimeException;
@@ -161,6 +160,9 @@ readonly class PresetManager
         return file_exists($presetFile);
     }
 
+    /**
+     * @return array<string, array<string>>
+     */
     private function formatPresetLayers(LayerCollection $customSubLayers): array
     {
         $result = [];

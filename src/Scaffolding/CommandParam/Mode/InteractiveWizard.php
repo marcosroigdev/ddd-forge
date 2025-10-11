@@ -19,6 +19,9 @@ readonly class InteractiveWizard
     ) {
     }
 
+    /**
+     * @param array{nameArgument?: string, namePrompt?: string, title: string, description?: string|string[]} $config
+     */
     public function run(SymfonyStyle $io, InputInterface $input, array $config): LayerCollection
     {
         $io->title("🏗️  {$config['title']}");
@@ -62,7 +65,7 @@ readonly class InteractiveWizard
             'standard'
         );
 
-        $customSublayers = [];
+        $customSublayers = null;
 
         if ($selectedTemplate === 'custom') {
             $io->section('Custom Sublayer Configuration');
@@ -95,7 +98,7 @@ readonly class InteractiveWizard
 
         $io->newLine();
 
-        return $customSublayers;
+        return is_null($customSublayers) ? LayerCollection::createEmpty() : $customSublayers;
     }
 
 
