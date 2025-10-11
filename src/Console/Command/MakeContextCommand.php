@@ -13,6 +13,7 @@ use DddForge\Scaffolding\Directory\DirectoryManager;
 use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
 use DddForge\Scaffolding\File\PresetManager;
 use DddForge\Scaffolding\File\YamlExporter;
+use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\TemplateEngine;
 use DddForge\Support\Utils\Str;
 use Exception;
@@ -33,8 +34,7 @@ final class MakeContextCommand extends Command
 {
     private const DIRECTORY_SEPARATOR = '/';
 
-    /** @var array<string, string[]> */
-    private array $customSublayers = [];
+    private LayerCollection $customSublayers;
 
     public function __construct(
         private readonly PresetManager $presetManager,
@@ -46,6 +46,7 @@ final class MakeContextCommand extends Command
         private readonly TemplateEngine $templateEngine,
         private readonly DryRunManager $dryRunManager
     ) {
+        $this->customSublayers = LayerCollection::createEmpty();
         parent::__construct();
     }
 
@@ -119,7 +120,8 @@ final class MakeContextCommand extends Command
         ];
 
         $wizardResult = $this->wizard->run($io, $input, $wizardConfig);
-        $this->customSublayers = $wizardResult['customSublayers'];
+
+        $this->customSublayers = $wizardResult['selectedTemplate'] === 'custom' ? LayerCollection::fromArray($wizardResult['customSublayers']) : $wizardResult['customSublayers'];
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -137,9 +139,9 @@ final class MakeContextCommand extends Command
                 $config->name,
                 $config->baseDir,
                 array_values($layers),
+                $this->customSublayers,
                 $config->withSubLayers,
                 $config->template,
-                $this->customSublayers
             );
 
             $scaffoldingConfig = [

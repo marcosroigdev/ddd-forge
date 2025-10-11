@@ -18,12 +18,12 @@ final class TemplateEngine
         'basic'          => [
             'name'        => 'Basic DDD (Main layers only)',
             'description' => 'Creates only the 4 main DDD layers without sublayers',
-            'sublayers'   => [],
+            'layers'   => [],
         ],
         'standard'       => [
             'name'        => 'Standard DDD (Recommended)',
             'description' => 'Complete DDD structure with common sublayers',
-            'sublayers'   => [
+            'layers'   => [
                 'Domain'         => ['Model', 'Service', 'Repository', 'Event'],
                 'Application'    => ['Command', 'Query', 'Handler', 'Service'],
                 'Infrastructure' => ['Persistence', 'Service', 'Resources'],
@@ -33,7 +33,7 @@ final class TemplateEngine
         'cqrs'           => [
             'name'        => 'CQRS Pattern',
             'description' => 'Command Query Responsibility Segregation',
-            'sublayers'   => [
+            'layers'   => [
                 'Domain'         => ['Read', 'Write', 'Event'],
                 'Application'    => ['Command', 'Query', 'Handler', 'Bus'],
                 'Infrastructure' => ['Read', 'Write', 'Persistence', 'Resources'],
@@ -43,7 +43,7 @@ final class TemplateEngine
         'event-sourcing' => [
             'name'        => 'Event Sourcing',
             'description' => 'Event-driven architecture with event store',
-            'sublayers'   => [
+            'layers'   => [
                 'Domain'         => ['Aggregate', 'Event', 'Projection'],
                 'Application'    => ['Command', 'Query', 'EventHandler', 'Projector'],
                 'Infrastructure' => ['EventStore', 'Projection', 'Snapshot', 'Resources'],
@@ -53,7 +53,7 @@ final class TemplateEngine
         'hexagonal'      => [
             'name'        => 'Hexagonal Architecture',
             'description' => 'Ports and Adapters pattern',
-            'sublayers'   => [
+            'layers'   => [
                 'Domain'         => ['Model', 'Port', 'Service'],
                 'Application'    => ['UseCase', 'Port', 'Service'],
                 'Infrastructure' => ['Adapter', 'Persistence', 'External', 'Resources'],
@@ -62,16 +62,9 @@ final class TemplateEngine
         ],
     ];
 
-    /**
-     * @return array{
-     *     name: string,
-     *     description: string,
-     *     sublayers: array<string, string[]>
-     * }|null
-     */
-    public function getTemplate(string $name): ?array
+    public function getTemplate(string $name): Template
     {
-        return self::TEMPLATES[$name] ?? null;
+        return $this->getTemplateCollection()->findByNameOrFail($name);
     }
 
     public function isValidTemplate(string $template): bool
@@ -106,7 +99,7 @@ final class TemplateEngine
 
         foreach (self::TEMPLATES as $name => $structure) {
 
-            $layerCollection = $this->getLayerCollection($structure['sublayers']);
+            $layerCollection = $this->getLayerCollection($structure['layers']);
 
             $collection->add(
                 new Template(

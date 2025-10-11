@@ -15,4 +15,31 @@ class LayerCollection extends TypedCollection
     {
         return Layer::class;
     }
+
+    public static function fromArray(array $layers): LayerCollection
+    {
+        $layerCollection = LayerCollection::createEmpty();
+        foreach ($layers as $name => $subLayers) {
+
+            $subLayerCollection = SubLayerCollection::createEmpty();
+
+            foreach ($subLayers as $subLayer) {
+                $subLayerCollection->add(
+                    new SubLayer(
+                        $subLayer
+                    )
+                );
+            }
+
+            $layerCollection->add(
+                new Layer(
+                    $name,
+                    $subLayerCollection
+                )
+            );
+
+        }
+
+        return $layerCollection;
+    }
 }

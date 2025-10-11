@@ -51,7 +51,7 @@ readonly class YamlExporter
     private function buildYamlStructure(array $paths, array $config): string
     {
         $type = $config['type'];
-        $yaml = "# {$type}: {$config['name']}\n";
+        $yaml = "# $type: {$config['name']}\n";
         $yaml .= "# Generated: " . date('Y-m-d H:i:s') . "\n";
         $yaml .= "# Template: " . ($config['template'] ?? 'custom') . "\n\n";
 

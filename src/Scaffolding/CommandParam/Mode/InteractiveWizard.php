@@ -81,12 +81,12 @@ readonly class InteractiveWizard
             $input->setOption('with-sublayers', true);
         } elseif ($selectedTemplate !== 'basic') {
             $template = $this->templateEngine->getTemplate($selectedTemplate);
-            $customSublayers = $template['sublayers'];
+            $customSublayers = $template->layers;
             $input->setOption('with-sublayers', true);
             $input->setOption('template', $selectedTemplate);
 
-            $io->text("  ✓ Using template: <info>{$template['name']}</info>");
-            $io->text("  <comment>{$template['description']}</comment>");
+            $io->text("  ✓ Using template: <info>$template->name</info>");
+            $io->text("  <comment>$template->description</comment>");
         }
 
         $io->newLine();

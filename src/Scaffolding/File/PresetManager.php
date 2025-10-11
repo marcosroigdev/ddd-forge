@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DddForge\Scaffolding\File;
 
 use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
+use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -18,10 +19,7 @@ readonly class PresetManager
     ) {
     }
 
-    /**
-     * @param array<string, string[]> $customSubLayers
-     */
-    public function save(string $name, ContextConfigData $config, array $customSubLayers): void
+    public function save(string $name, ContextConfigData $config, LayerCollection $customSubLayers): void
     {
         $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
 

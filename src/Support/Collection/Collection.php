@@ -49,6 +49,11 @@ abstract class Collection implements Arrayable
         $this->items[] = $item;
     }
 
+    public function isEmpty(): bool
+    {
+        return empty($this->items);
+    }
+
     /**
      * @return T[]
      */

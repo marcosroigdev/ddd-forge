@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\Template;
 
+use DddForge\Scaffolding\Template\Exception\TemplateException;
 use DddForge\Support\Collection\StringCollection;
 use DddForge\Support\Collection\TypedCollection;
 
@@ -25,5 +26,16 @@ class TemplateCollection extends TypedCollection
                 $this->toArray(),
             )
         );
+    }
+
+    public function findByNameOrFail(string $name): Template
+    {
+        foreach ($this->items as $template) {
+            if($template->name === $name) {
+                return $template;
+            }
+        }
+
+        throw TemplateException::becauseTemplateWasNotFoundWithName($name);
     }
 }

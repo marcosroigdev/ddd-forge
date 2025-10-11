@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\Directory;
 
+use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\TemplateEngine;
 
 final class DirectoryStructureBuilder
 {
     private const DIRECTORY_SEPARATOR = '/';
-    private const LAYER_PATHS = [
-        'Domain' => '/Domain',
-        'Application' => '/Application',
+    private const LAYER_PATHS         = [
+        'Domain'         => '/Domain',
+        'Application'    => '/Application',
         'Infrastructure' => '/Infrastructure',
-        'UI' => '/UI',
+        'UI'             => '/UI',
     ];
 
     public function __construct(
@@ -21,32 +22,33 @@ final class DirectoryStructureBuilder
     ) {
     }
 
-    /**
-     * @param string[] $layers
-     * @param array<string, string[]> $customSublayers
-     * @return string[]
-     */
     public function build(
         string $name,
         string $baseDir,
         array $layers,
+        LayerCollection $customSublayers,
         bool $withSublayers = false,
         ?string $template = null,
-        array $customSublayers = []
     ): array {
-        $root = $baseDir . self::DIRECTORY_SEPARATOR . $name;
+        $root  = $baseDir . self::DIRECTORY_SEPARATOR . $name;
         $paths = [$root];
 
         foreach ($layers as $layerPath) {
             $paths[] = $root . $layerPath;
         }
-
         if ($withSublayers) {
-            $sublayers = $this->resolveSublayers($template, $customSublayers, $layers);
 
-            foreach ($sublayers as $layer => $layerSublayers) {
-                foreach ($layerSublayers as $sublayer) {
-                    $paths[] = $root . '/' . $layer . '/' . $sublayer;
+            if ($template) {
+                $layers = $this->getTemplateLayers($template);
+            }
+
+            if (!$customSublayers->isEmpty()) {
+                $layers = $customSublayers;
+            }
+
+            foreach ($layers->toArray() as $layer) {
+                foreach ($layer->subLayers->toArray() as $sublayer) {
+                    $paths[] = $root . '/' . $layer->name . '/' . $sublayer->name;
                 }
             }
         }
@@ -54,23 +56,9 @@ final class DirectoryStructureBuilder
         return $paths;
     }
 
-    /**
-     * @param array<string, string[]> $customSublayers
-     * @param string[] $defaultLayers
-     * @return array<string, string[]>
-     */
-    public function resolveSublayers(?string $template, array $customSublayers = [], array $defaultLayers = []): array
+    public function getTemplateLayers(string $templateName): LayerCollection
     {
-        if (!empty($customSublayers)) {
-            return $customSublayers;
-        }
-
-        if ($template !== null && $this->templateEngine->isValidTemplate($template)) {
-            $templateData = $this->templateEngine->getTemplate($template);
-            return $templateData['sublayers'] ?? [];
-        }
-
-        return [];
+        return $this->templateEngine->getTemplate($templateName)->layers;
     }
 
     /**
@@ -91,7 +79,7 @@ final class DirectoryStructureBuilder
 
         foreach ($paths as $path) {
             $relativePath = str_replace($name . '/', '', basename(dirname($path)) . '/' . basename($path));
-            $parts = explode('/', trim($relativePath, '/'));
+            $parts        = explode('/', trim($relativePath, '/'));
 
             if (count($parts) === 1) {
                 $grouped['root'][] = $path;
