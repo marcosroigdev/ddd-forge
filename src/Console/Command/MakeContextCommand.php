@@ -9,6 +9,7 @@ use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
 use DddForge\Scaffolding\CommandParam\Input\InputNameValidator;
 use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
 use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
+use DddForge\Scaffolding\Config\ScaffoldingConfig;
 use DddForge\Scaffolding\Directory\DirectoryBuildConfig;
 use DddForge\Scaffolding\Directory\DirectoryManager;
 use DddForge\Scaffolding\Directory\DirectoryPathCollection;
@@ -193,6 +194,14 @@ final class MakeContextCommand extends Command
                 ],
                 'tipMessage'     => 'Tip: Use --template=standard for more detailed structures.'
             ];
+
+            $scaffoldingConfig = ScaffoldingConfig::forContext(
+                $config->name,
+                $config->baseDir,
+                $config->force,
+                $config->withSubLayers,
+                $config->template,
+            );
 
             if ($config->dryRun) {
                 return $this->dryRunManager->showDryRun($io, $paths, $scaffoldingConfig);

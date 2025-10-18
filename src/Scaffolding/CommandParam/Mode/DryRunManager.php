@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\CommandParam\Mode;
 
+use DddForge\Scaffolding\Config\ScaffoldingConfig;
 use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
 use DddForge\Scaffolding\Directory\PathCollection;
 use Symfony\Component\Console\Command\Command;
@@ -16,29 +17,18 @@ final class DryRunManager
     ) {
     }
 
-    /**
-     * @param array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null
-     * } $config
-     */
-    public function showDryRun(SymfonyStyle $io, PathCollection $paths, array $config): int
+    public function showDryRun(SymfonyStyle $io, PathCollection $paths, ScaffoldingConfig $config): int
     {
-        $io->title("🔍 Dry Run: {$config['name']} {$config['type']} Structure");
+        $io->title("🔍 Dry Run: {$config->type} {$config->name} Structure");
 
-        $templateInfo = $config['template']
-            ? " (<info>{$config['template']}</info> template)"
-            : '';
-
-        $io->text("The following structure$templateInfo would be created:");
+        $io->text("The following structure{$config->templateInfo()} would be created:");
         $io->newLine();
 
-        $directoryGroups = $this->structureBuilder->buildDirectoryGroups($paths, $config['name']);
+        $directoryGroups = $this->structureBuilder->buildDirectoryGroups($paths, $config->name);
 
         foreach ($directoryGroups->toArray() as $directoryGroup) {
             if ($directoryGroup->isRoot()) {
-                $io->text("  📁 <info>{$config['name']}/</info>");
+                $io->text("  📁 <info>{$config->name}/</info>");
             } else {
                 $io->text("  📂 <info>$directoryGroup->name/</info>");
                 foreach ($directoryGroup->paths->toArray() as $path) {

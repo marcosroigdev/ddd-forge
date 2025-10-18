@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\File;
 
+use DddForge\Scaffolding\Config\ScaffoldingConfig;
 use DddForge\Scaffolding\Directory\PathCollection;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -16,16 +17,7 @@ readonly class YamlExporter
     ) {
     }
 
-    /**
-     * @param array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null,
-     *     baseDir: string,
-     *     contextName: string
-     * } $config
-     */
-    public function export(SymfonyStyle $io, PathCollection $paths, array $config, string $filename): void
+    public function export(SymfonyStyle $io, PathCollection $paths, ScaffoldingConfig $config, string $filename): void
     {
         $yamlContent = $this->buildYamlStructure($paths, $config);
 
@@ -37,33 +29,23 @@ readonly class YamlExporter
         }
     }
 
-    /**
-     * @param array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null,
-     *     baseDir: string,
-     *     contextName: string
-     * } $config
-     * @return string
-     */
-    private function buildYamlStructure(PathCollection $paths, array $config): string
+    private function buildYamlStructure(PathCollection $paths, ScaffoldingConfig $config): string
     {
-        $type = $config['type'];
-        $yaml = "# $type: {$config['name']}\n";
+        $type = $config->type;
+        $yaml = "# $type: $config->name\n";
         $yaml .= "# Generated: " . date('Y-m-d H:i:s') . "\n";
-        $yaml .= "# Template: " . ($config['template'] ?? 'custom') . "\n\n";
+        $yaml .= "# Template: " . ($config->template ?? 'custom') . "\n\n";
 
-        $yaml .= strtolower($type) . ":\n";
-        $yaml .= "  name: {$config['name']}\n";
-        $yaml .= "  baseDir: {$config['baseDir']}\n";
-        $yaml .= "  template: " . ($config['template'] ?? 'custom') . "\n\n";
+        $yaml .= strtolower($config->type) . ":\n";
+        $yaml .= "  name: $config->name\n";
+        $yaml .= "  baseDir: $config->baseDir\n";
+        $yaml .= "  template: " . ($config->template ?? 'custom') . "\n\n";
 
         $yaml .= "structure:\n";
 
         $structure = [];
         foreach ($paths->toArray() as $path) {
-            $relativePath = str_replace($config['baseDir'] . '/' . $config['contextName'] . '/', '', $path->name);
+            $relativePath = str_replace($config->baseDir . '/' . $config->contextName . '/', '', $path->name);
             $parts = explode('/', $relativePath);
 
             if (count($parts) === 1) {
@@ -94,9 +76,9 @@ readonly class YamlExporter
 
         $yaml .= "\n# Usage:\n";
         $yaml .= "# You can use this file as documentation or recreate the structure\n";
-        $yaml .= "# Command: make:context {$config['contextName']}";
-        if ($config['template']) {
-            $yaml .= " --template={$config['template']}";
+        $yaml .= "# Command: make:context $config->contextName";
+        if ($config->template) {
+            $yaml .= " --template=$config->template";
         }
         $yaml .= "\n";
 

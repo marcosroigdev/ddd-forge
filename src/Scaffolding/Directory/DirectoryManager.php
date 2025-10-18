@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\Directory;
 
+use DddForge\Scaffolding\Config\ScaffoldingConfig;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -18,27 +19,16 @@ readonly class DirectoryManager
     ) {
     }
 
-    /**
-     * @param array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null,
-     *     force: bool,
-     *     successMessage?: string|string[],
-     *     withSublayers?: bool,
-     *     tipMessage?: string
-     * } $config
-     */
-    public function createDirectories(SymfonyStyle $io, PathCollection $paths, array $config): int
+    public function createDirectories(SymfonyStyle $io, PathCollection $paths, ScaffoldingConfig $config): int
     {
         $created = 0;
         $skipped = 0;
 
-        $io->title("🏗️  Creating {$config['name']} {$config['type']}");
+        $io->title("🏗️  Creating $config->name $config->type");
 
         foreach ($paths->toArray() as $path) {
             try {
-                if ($this->filesystem->exists($path->name) && !$config['force']) {
+                if ($this->filesystem->exists($path->name) && !$config->force) {
                     $io->text("  <comment>•</comment> <fg=yellow>Exists:</fg=yellow> $path->name");
                     $skipped++;
                     continue;
@@ -84,20 +74,9 @@ readonly class DirectoryManager
         $io->text('  These files ensure empty directories are tracked by Git.');
     }
 
-    /**
-     * @param array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null,
-     *     successMessage?: string|string[],
-     *     withSublayers?: bool,
-     *     tipMessage?: string
-     * } $config
-     */
-    private function showSummary(SymfonyStyle $io, array $config, int $created, int $skipped): void
+    private function showSummary(SymfonyStyle $io, ScaffoldingConfig $config, int $created, int $skipped): void
     {
-        $templateInfo = $config['template'] ? " using {$config['template']} template" : '';
-        $io->success("{$config['name']} {$config['type']} ready$templateInfo!");
+        $io->success("$config->name $config->type ready{$config->templateText()}!");
 
         $summary = [];
         if ($created > 0) {
@@ -112,11 +91,11 @@ readonly class DirectoryManager
         }
 
         $io->newLine();
-        $io->text($config['successMessage'] ?? []);
+        $io->text($config->successMessages);
 
-        if (!($config['withSublayers'] ?? false)) {
+        if (!$config->withSubLayers && $config->tipMessage) {
             $io->newLine();
-            $io->note($config['tipMessage'] ?? 'Tip: Use templates for more detailed structures.');
+            $io->note($config->tipMessage);
         }
     }
 }
