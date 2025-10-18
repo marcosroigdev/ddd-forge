@@ -17,40 +17,40 @@ final class DirectoryStructureBuilder
     ) {
     }
 
-    /**
-     * @return string[]
-     */
-    public function build(DirectoryBuildConfig $config): array
+    public function build(DirectoryBuildConfig $config): PathCollection
     {
+        $paths = PathCollection::createEmpty();
         $root  = $config->baseDir . self::DIRECTORY_SEPARATOR . $config->name;
-        $paths = [$root];
+
+        $paths->add(
+            new Path(
+                $root
+            )
+        );
 
         foreach ($config->directoryPaths->toArray() as $directoryPath) {
-            $paths[] = $root . $directoryPath->path;
+            $paths->add(
+                new Path(
+                    $root . $directoryPath->path
+                )
+            );
         }
 
         if ($config->withSublayers) {
-            $paths = array_merge($paths, $this->buildSublayerPaths($config, $root));
-        }
+            $layerCollection = $config->customSublayers;
 
-        return $paths;
-    }
+            if ($config->template && $layerCollection->isEmpty()) {
+                $layerCollection = $this->getTemplateLayers($config->template);
+            }
 
-    /**
-     * @return string[]
-     */
-    private function buildSublayerPaths(DirectoryBuildConfig $config, string $root): array
-    {
-        $paths           = [];
-        $layerCollection = $config->customSublayers;
-
-        if ($config->template && $layerCollection->isEmpty()) {
-            $layerCollection = $this->getTemplateLayers($config->template);
-        }
-
-        foreach ($layerCollection->toArray() as $layer) {
-            foreach ($layer->subLayers->toArray() as $sublayer) {
-                $paths[] = $root . '/' . $layer->name . '/' . $sublayer->name;
+            foreach ($layerCollection->toArray() as $layer) {
+                foreach ($layer->subLayers->toArray() as $sublayer) {
+                    $paths->add(
+                        new Path(
+                            $root . '/' . $layer->name . '/' . $sublayer->name
+                        )
+                    );
+                }
             }
         }
 
@@ -67,10 +67,7 @@ final class DirectoryStructureBuilder
         return $this->directoryPathRegistry->getDefaultPaths();
     }
 
-    /**
-     * @param string[] $paths
-     */
-    public function buildDirectoryGroups(array $paths, string $name): DirectoryGroupCollection
+    public function buildDirectoryGroups(PathCollection $paths, string $name): DirectoryGroupCollection
     {
         $directoryGroupCollection = DirectoryGroupCollection::createEmpty();
 
@@ -81,16 +78,12 @@ final class DirectoryStructureBuilder
             )
         );
 
-        foreach ($paths as $path) {
-            $relativePath = str_replace($name . '/', '', basename(dirname($path)) . '/' . basename($path));
+        foreach ($paths->toArray() as $path) {
+            $relativePath = str_replace($name . '/', '', basename(dirname($path->name)) . '/' . basename($path->name));
             $parts        = explode('/', trim($relativePath, '/'));
 
             if (count($parts) === 1) {
-                $directoryGroupCollection->findByName('root')?->paths->add(
-                    new Path(
-                        $path
-                    )
-                );
+                $directoryGroupCollection->findByName('root')?->paths->add($path);
             } else {
                 $layer = $parts[0];
                 if (!$directoryGroupCollection->findByName($layer)) {
@@ -103,11 +96,7 @@ final class DirectoryStructureBuilder
                 }
 
                 if (count($parts) > 1) {
-                    $directoryGroupCollection->findByName($layer)?->paths->add(
-                        new Path(
-                            $path
-                        )
-                    );
+                    $directoryGroupCollection->findByName($layer)?->paths->add($path);
                 }
             }
         }

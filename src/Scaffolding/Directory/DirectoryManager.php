@@ -19,7 +19,6 @@ readonly class DirectoryManager
     }
 
     /**
-     * @param string[] $paths
      * @param array{
      *     name: string,
      *     type: string,
@@ -30,27 +29,27 @@ readonly class DirectoryManager
      *     tipMessage?: string
      * } $config
      */
-    public function createDirectories(SymfonyStyle $io, array $paths, array $config): int
+    public function createDirectories(SymfonyStyle $io, PathCollection $paths, array $config): int
     {
         $created = 0;
         $skipped = 0;
 
         $io->title("🏗️  Creating {$config['name']} {$config['type']}");
 
-        foreach ($paths as $path) {
+        foreach ($paths->toArray() as $path) {
             try {
-                if ($this->filesystem->exists($path) && !$config['force']) {
-                    $io->text("  <comment>•</comment> <fg=yellow>Exists:</fg=yellow> $path");
+                if ($this->filesystem->exists($path->name) && !$config['force']) {
+                    $io->text("  <comment>•</comment> <fg=yellow>Exists:</fg=yellow> $path->name");
                     $skipped++;
                     continue;
                 }
 
-                $this->filesystem->mkdir($path);
-                $io->text("  <info>✔</info> <fg=green>Created:</fg=green> $path");
+                $this->filesystem->mkdir($path->name);
+                $io->text("  <info>✔</info> <fg=green>Created:</fg=green> $path->name");
                 $created++;
 
             } catch (IOExceptionInterface $e) {
-                $io->error("Failed to create directory: $path. Error: " . $e->getMessage());
+                $io->error("Failed to create directory: $path->name. Error: " . $e->getMessage());
                 return Command::FAILURE;
             }
         }
@@ -61,17 +60,14 @@ readonly class DirectoryManager
         return Command::SUCCESS;
     }
 
-    /**
-     * @param string[] $paths
-     */
-    public function createGitkeepFiles(SymfonyStyle $io, array $paths): void
+    public function createGitkeepFiles(SymfonyStyle $io, PathCollection $paths): void
     {
         $created = 0;
 
         $io->section('Creating .gitkeep files');
 
-        foreach ($paths as $path) {
-            $gitkeepFile = $path . '/' . self::GITKEEP_FILE;
+        foreach ($paths->toArray() as $path) {
+            $gitkeepFile = $path->name . '/' . self::GITKEEP_FILE;
 
             try {
                 if (!$this->filesystem->exists($gitkeepFile)) {
@@ -80,7 +76,7 @@ readonly class DirectoryManager
                     $created++;
                 }
             } catch (IOExceptionInterface) {
-                $io->warning("Could not create .gitkeep in: $path");
+                $io->warning("Could not create .gitkeep in: $path->name");
             }
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\File;
 
+use DddForge\Scaffolding\Directory\PathCollection;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -16,7 +17,6 @@ readonly class YamlExporter
     }
 
     /**
-     * @param string[] $paths
      * @param array{
      *     name: string,
      *     type: string,
@@ -25,7 +25,7 @@ readonly class YamlExporter
      *     contextName: string
      * } $config
      */
-    public function export(SymfonyStyle $io, array $paths, array $config, string $filename): void
+    public function export(SymfonyStyle $io, PathCollection $paths, array $config, string $filename): void
     {
         $yamlContent = $this->buildYamlStructure($paths, $config);
 
@@ -38,7 +38,6 @@ readonly class YamlExporter
     }
 
     /**
-     * @param string[] $paths
      * @param array{
      *     name: string,
      *     type: string,
@@ -48,7 +47,7 @@ readonly class YamlExporter
      * } $config
      * @return string
      */
-    private function buildYamlStructure(array $paths, array $config): string
+    private function buildYamlStructure(PathCollection $paths, array $config): string
     {
         $type = $config['type'];
         $yaml = "# $type: {$config['name']}\n";
@@ -63,8 +62,8 @@ readonly class YamlExporter
         $yaml .= "structure:\n";
 
         $structure = [];
-        foreach ($paths as $path) {
-            $relativePath = str_replace($config['baseDir'] . '/' . $config['contextName'] . '/', '', $path);
+        foreach ($paths->toArray() as $path) {
+            $relativePath = str_replace($config['baseDir'] . '/' . $config['contextName'] . '/', '', $path->name);
             $parts = explode('/', $relativePath);
 
             if (count($parts) === 1) {
