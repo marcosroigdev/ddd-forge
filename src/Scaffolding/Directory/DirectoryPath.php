@@ -9,7 +9,6 @@ readonly class DirectoryPath
     public function __construct(
         public string $name,
         public string $path,
-    )
-    {
+    ) {
     }
 }
