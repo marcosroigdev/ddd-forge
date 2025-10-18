@@ -10,26 +10,20 @@ use DddForge\Scaffolding\Template\TemplateEngine;
 final class DirectoryStructureBuilder
 {
     private const DIRECTORY_SEPARATOR = '/';
-    private const LAYER_PATHS         = [
-        'Domain'         => '/Domain',
-        'Application'    => '/Application',
-        'Infrastructure' => '/Infrastructure',
-        'UI'             => '/UI',
-    ];
 
     public function __construct(
-        private readonly TemplateEngine $templateEngine
+        private readonly TemplateEngine $templateEngine,
+        private readonly DirectoryPathRegistry $directoryPathRegistry
     ) {
     }
 
     /**
-     * @param string[] $layers
      * @return string[]
      */
     public function build(
         string $name,
         string $baseDir,
-        array $layers,
+        DirectoryPathCollection $directoryPaths,
         LayerCollection $customSublayers,
         bool $withSublayers = false,
         ?string $template = null,
@@ -37,8 +31,8 @@ final class DirectoryStructureBuilder
         $root  = $baseDir . self::DIRECTORY_SEPARATOR . $name;
         $paths = [$root];
 
-        foreach ($layers as $layerPath) {
-            $paths[] = $root . $layerPath;
+        foreach ($directoryPaths->toArray() as $directoryPath) {
+            $paths[] = $root . $directoryPath->path;
         }
         if ($withSublayers) {
             $layerCollection = $customSublayers;
@@ -62,12 +56,9 @@ final class DirectoryStructureBuilder
         return $this->templateEngine->getTemplate($templateName)->layers;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getLayerPaths(): array
+    public function getDefaultDirectoryPaths(): DirectoryPathCollection
     {
-        return self::LAYER_PATHS;
+        return $this->directoryPathRegistry->getDefaultPaths();
     }
 
     /**

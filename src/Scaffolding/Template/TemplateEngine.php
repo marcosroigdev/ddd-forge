@@ -12,9 +12,9 @@ use DddForge\Support\Collection\StringCollection;
 
 final class TemplateEngine
 {
-    private const         CUSTOM_TEMPLATE_DESCRIPTION = 'Custom (I\'ll choose my own sublayers)';
-    private const         CUSTOM_TEMPLATE_NAME        = 'custom';
-    private const         TEMPLATES                   = [
+    private const CUSTOM_TEMPLATE_DESCRIPTION = 'Custom (I\'ll choose my own sublayers)';
+    private const CUSTOM_TEMPLATE_NAME        = 'custom';
+    private const TEMPLATES                   = [
         'basic'          => [
             'name'        => 'Basic DDD (Main layers only)',
             'description' => 'Creates only the 4 main DDD layers without sublayers',

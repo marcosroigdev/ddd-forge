@@ -131,12 +131,12 @@ final class MakeContextCommand extends Command
             $this->inputTemplateValidator->validate($input);
 
             $config = $this->getConfigContextData($input);
-            $layers = $this->structureBuilder->getLayerPaths();
+            $defaultDirectoryPaths = $this->structureBuilder->getDefaultDirectoryPaths();
 
             $paths = $this->structureBuilder->build(
                 $config->name,
                 $config->baseDir,
-                array_values($layers),
+                $defaultDirectoryPaths,
                 $this->customSublayers,
                 $config->withSubLayers,
                 $config->template,

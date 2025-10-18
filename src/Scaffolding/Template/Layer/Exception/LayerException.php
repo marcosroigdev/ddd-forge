@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\Template\Layer\Exception;
 
-use InvalidArgumentException;
+use DddForge\Exception\InvalidArgumentException;
 
 class LayerException extends InvalidArgumentException
 {

@@ -108,17 +108,17 @@ readonly class InteractiveWizard
         $io->newLine();
 
         $customSublayers = [];
-        $layerPaths = $this->structureBuilder->getLayerPaths();
+        $directoryPaths = $this->structureBuilder->getDefaultDirectoryPaths();
 
-        foreach ($layerPaths as $layerName => $layerPath) {
-            $io->section("$layerName Layer");
+        foreach ($directoryPaths->toArray() as $directoryPath) {
+            $io->section("$directoryPath->name Layer");
 
-            $suggestions = $this->getSuggestionsForLayer($layerName);
+            $suggestions = $this->getSuggestionsForLayer($directoryPath->name);
             if (!empty($suggestions)) {
                 $io->text("  <comment>Suggestions: " . implode(', ', $suggestions) . "</comment>");
             }
 
-            $createSublayers = $io->confirm("Create sublayers for $layerName?");
+            $createSublayers = $io->confirm("Create sublayers for $directoryPath->name?");
 
             if ($createSublayers) {
                 $sublayersInput = $io->ask(
@@ -129,7 +129,7 @@ readonly class InteractiveWizard
                 if ($sublayersInput) {
                     $sublayers = array_map('trim', explode(',', $sublayersInput));
                     $sublayers = array_filter($sublayers);
-                    $customSublayers[$layerName] = $sublayers;
+                    $customSublayers[$directoryPath->name] = $sublayers;
 
                     $io->text("  ✓ Will create: <info>" . implode(', ', $sublayers) . "</info>");
                 }

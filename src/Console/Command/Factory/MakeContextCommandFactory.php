@@ -10,6 +10,7 @@ use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
 use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
 use DddForge\Scaffolding\Directory\DirectoryManager;
 use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
+use DddForge\Scaffolding\Directory\DirectoryPathRegistry;
 use DddForge\Scaffolding\File\PresetManager;
 use DddForge\Scaffolding\File\YamlExporter;
 use DddForge\Scaffolding\Template\TemplateEngine;
@@ -21,7 +22,8 @@ final class MakeContextCommandFactory
     {
         $filesystem             = new Filesystem();
         $templateEngine         = new TemplateEngine();
-        $structureBuilder       = new DirectoryStructureBuilder($templateEngine);
+        $layerPathRegistry      = new DirectoryPathRegistry();
+        $structureBuilder       = new DirectoryStructureBuilder($templateEngine, $layerPathRegistry);
         $presetManager          = new PresetManager($filesystem);
         $wizard                 = new InteractiveWizard($templateEngine, $structureBuilder);
         $yamlExporter           = new YamlExporter($filesystem);
