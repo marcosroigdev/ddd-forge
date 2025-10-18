@@ -163,8 +163,7 @@ final class MakeContextCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            InputNameValidator::validate($input);
-            $this->inputTemplateValidator->validate($input);
+            $this->validateInput($input);
 
             $config = $this->getConfigContextData($input);
 
@@ -224,6 +223,12 @@ final class MakeContextCommand extends Command
             $io->error('An unexpected error occurred: ' . $e->getMessage());
             return Command::FAILURE;
         }
+    }
+
+    private function validateInput(InputInterface $input): void
+    {
+        InputNameValidator::validate($input);
+        $this->inputTemplateValidator->validate($input);
     }
 
     private function loadPreset(SymfonyStyle $io, InputInterface $input, string $presetName): void

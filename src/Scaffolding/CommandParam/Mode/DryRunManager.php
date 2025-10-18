@@ -34,15 +34,15 @@ final class DryRunManager
         $io->text("The following structure$templateInfo would be created:");
         $io->newLine();
 
-        $grouped = $this->structureBuilder->groupPathsByLayer($paths, $config['name']);
+        $directoryGroups = $this->structureBuilder->buildDirectoryGroups($paths, $config['name']);
 
-        foreach ($grouped as $layer => $layerPaths) {
-            if ($layer === 'root') {
+        foreach ($directoryGroups->toArray() as $directoryGroup) {
+            if ($directoryGroup->isRoot()) {
                 $io->text("  📁 <info>{$config['name']}/</info>");
             } else {
-                $io->text("  📂 <info>$layer/</info>");
-                foreach ($layerPaths as $path) {
-                    $sublayer = basename($path);
+                $io->text("  📂 <info>$directoryGroup->name/</info>");
+                foreach ($directoryGroup->paths->toArray() as $path) {
+                    $sublayer = basename($path->name);
                     $io->text("     └─ <comment>$sublayer</comment>");
                 }
             }

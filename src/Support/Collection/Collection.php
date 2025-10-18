@@ -26,7 +26,6 @@ abstract class Collection implements Arrayable
         $this->items = $items;
     }
 
-
     /**
      * @param T[] $items
      * @phpstan-return static
@@ -63,5 +62,13 @@ abstract class Collection implements Arrayable
             fn ($item) => $item,
             $this->items
         );
+    }
+
+    /**
+     * @return T|false
+     */
+    public function first()
+    {
+        return reset($this->items);
     }
 }

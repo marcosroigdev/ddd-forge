@@ -41,7 +41,7 @@ final class DirectoryStructureBuilder
      */
     private function buildSublayerPaths(DirectoryBuildConfig $config, string $root): array
     {
-        $paths = [];
+        $paths           = [];
         $layerCollection = $config->customSublayers;
 
         if ($config->template && $layerCollection->isEmpty()) {
@@ -69,29 +69,49 @@ final class DirectoryStructureBuilder
 
     /**
      * @param string[] $paths
-     * @return array<string, string[]>
      */
-    public function groupPathsByLayer(array $paths, string $name): array
+    public function buildDirectoryGroups(array $paths, string $name): DirectoryGroupCollection
     {
-        $grouped = ['root' => []];
+        $directoryGroupCollection = DirectoryGroupCollection::createEmpty();
+
+        $directoryGroupCollection->add(
+            new DirectoryGroup(
+                'root',
+                PathCollection::createEmpty(),
+            )
+        );
 
         foreach ($paths as $path) {
             $relativePath = str_replace($name . '/', '', basename(dirname($path)) . '/' . basename($path));
             $parts        = explode('/', trim($relativePath, '/'));
 
             if (count($parts) === 1) {
-                $grouped['root'][] = $path;
+                $directoryGroupCollection->findByName('root')?->paths->add(
+                    new Path(
+                        $path
+                    )
+                );
             } else {
                 $layer = $parts[0];
-                if (!isset($grouped[$layer])) {
-                    $grouped[$layer] = [];
+                if (!$directoryGroupCollection->findByName($layer)) {
+                    $directoryGroupCollection->add(
+                        new DirectoryGroup(
+                            $layer,
+                            PathCollection::createEmpty(),
+                        )
+                    );
                 }
+
                 if (count($parts) > 1) {
-                    $grouped[$layer][] = $path;
+                    $directoryGroupCollection->findByName($layer)?->paths->add(
+                        new Path(
+                            $path
+                        )
+                    );
                 }
             }
         }
 
-        return $grouped;
+        return $directoryGroupCollection;
     }
 }

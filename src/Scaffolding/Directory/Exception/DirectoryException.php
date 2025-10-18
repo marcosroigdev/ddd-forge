@@ -62,5 +62,4 @@ class DirectoryException extends InvalidArgumentException
     {
         return new self(sprintf("Directory path segments cannot have trailing spaces: %s", $path));
     }
-
 }
