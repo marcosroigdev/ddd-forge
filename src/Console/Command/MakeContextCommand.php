@@ -9,7 +9,9 @@ use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
 use DddForge\Scaffolding\CommandParam\Input\InputNameValidator;
 use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
 use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
+use DddForge\Scaffolding\Directory\DirectoryBuildConfig;
 use DddForge\Scaffolding\Directory\DirectoryManager;
+use DddForge\Scaffolding\Directory\DirectoryPathCollection;
 use DddForge\Scaffolding\Directory\DirectoryStructureBuilder;
 use DddForge\Scaffolding\File\PresetManager;
 use DddForge\Scaffolding\File\YamlExporter;
@@ -27,7 +29,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'make:context',
+    name       : 'make:context',
     description: 'Generate a bounded context directory structure following DDD principles'
 )]
 final class MakeContextCommand extends Command
@@ -38,7 +40,7 @@ final class MakeContextCommand extends Command
 
     public function __construct(
         private readonly PresetManager $presetManager,
-        private readonly DirectoryStructureBuilder $structureBuilder,
+        private readonly DirectoryStructureBuilder $directoryStructureBuilder,
         private readonly InteractiveWizard $wizard,
         private readonly YamlExporter $yamlExporter,
         private readonly DirectoryManager $directoryManager,
@@ -54,15 +56,49 @@ final class MakeContextCommand extends Command
     {
         $this
             ->addArgument('name', InputArgument::OPTIONAL, 'The name of the bounded context to create')
-            ->addOption('dir', 'd', InputOption::VALUE_OPTIONAL, 'Target base directory where the context will be created', 'src')
+            ->addOption(
+                'dir',
+                'd',
+                InputOption::VALUE_OPTIONAL,
+                'Target base directory where the context will be created',
+                'src'
+            )
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force creation even if directories already exist')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show what would be created without actually creating directories')
-            ->addOption('with-sublayers', 's', InputOption::VALUE_NONE, 'Create detailed sublayers within each main layer')
-            ->addOption('template', 't', InputOption::VALUE_OPTIONAL, sprintf('Use a predefined template: %s', implode(', ', $this->templateEngine->getTemplateNames()->toArray())))
+            ->addOption(
+                'dry-run',
+                null,
+                InputOption::VALUE_NONE,
+                'Show what would be created without actually creating directories'
+            )
+            ->addOption(
+                'with-sublayers',
+                's',
+                InputOption::VALUE_NONE,
+                'Create detailed sublayers within each main layer'
+            )
+            ->addOption(
+                'template',
+                't',
+                InputOption::VALUE_OPTIONAL,
+                sprintf(
+                    'Use a predefined template: %s',
+                    implode(', ', $this->templateEngine->getTemplateNames()->toArray())
+                )
+            )
             ->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Run in interactive mode with wizard')
-            ->addOption('save-preset', null, InputOption::VALUE_OPTIONAL, 'Save current configuration as a reusable preset')
+            ->addOption(
+                'save-preset',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Save current configuration as a reusable preset'
+            )
             ->addOption('use-preset', 'p', InputOption::VALUE_OPTIONAL, 'Use a saved preset configuration')
-            ->addOption('export', 'e', InputOption::VALUE_OPTIONAL, 'Export the structure to a YAML file (provide filename)')
+            ->addOption(
+                'export',
+                'e',
+                InputOption::VALUE_OPTIONAL,
+                'Export the structure to a YAML file (provide filename)'
+            )
             ->addOption('gitkeep', 'g', InputOption::VALUE_NONE, 'Create .gitkeep files in all directories')
             ->setHelp($this->buildHelp());
     }
@@ -109,14 +145,14 @@ final class MakeContextCommand extends Command
         }
 
         $wizardConfig = [
-            'title' => 'Context Generator Wizard',
-            'description' => [
+            'title'        => 'Context Generator Wizard',
+            'description'  => [
                 'Welcome to the DDD Context Generator!',
                 'This wizard will help you create a bounded context structure.',
                 'Answer a few questions to customize your context architecture.'
             ],
             'nameArgument' => 'name',
-            'namePrompt' => 'What is the name of your bounded context?'
+            'namePrompt'   => 'What is the name of your bounded context?'
         ];
 
         $this->customSublayers = $this->wizard->run($io, $input, $wizardConfig);
@@ -131,25 +167,22 @@ final class MakeContextCommand extends Command
             $this->inputTemplateValidator->validate($input);
 
             $config = $this->getConfigContextData($input);
-            $defaultDirectoryPaths = $this->structureBuilder->getDefaultDirectoryPaths();
 
-            $paths = $this->structureBuilder->build(
-                $config->name,
-                $config->baseDir,
-                $defaultDirectoryPaths,
-                $this->customSublayers,
-                $config->withSubLayers,
-                $config->template,
+            $paths = $this->directoryStructureBuilder->build(
+                $this->getDirectoryBuildConfig(
+                    $config,
+                    $this->directoryStructureBuilder->getDefaultDirectoryPaths()
+                )
             );
 
             $scaffoldingConfig = [
-                'name' => $config->name,
-                'type' => 'context',
-                'template' => $config->template,
-                'force' => $config->force,
-                'withSublayers' => $config->withSubLayers,
-                'baseDir' => $config->baseDir,
-                'contextName' => $config->name,
+                'name'           => $config->name,
+                'type'           => 'context',
+                'template'       => $config->template,
+                'force'          => $config->force,
+                'withSublayers'  => $config->withSubLayers,
+                'baseDir'        => $config->baseDir,
+                'contextName'    => $config->name,
                 'successMessage' => [
                     '🎉 Your bounded context is ready!',
                     '',
@@ -159,7 +192,7 @@ final class MakeContextCommand extends Command
                     '• Implement infrastructure adapters',
                     '• Build your user interface'
                 ],
-                'tipMessage' => 'Tip: Use --template=standard for more detailed structures.'
+                'tipMessage'     => 'Tip: Use --template=standard for more detailed structures.'
             ];
 
             if ($config->dryRun) {
@@ -238,6 +271,20 @@ final class MakeContextCommand extends Command
             (bool) $input->getOption('dry-run'),
             (bool) $input->getOption('with-sublayers'),
             $input->getOption('template')
+        );
+    }
+
+    private function getDirectoryBuildConfig(
+        ContextConfigData $config,
+        DirectoryPathCollection $directoryPaths
+    ): DirectoryBuildConfig {
+        return new DirectoryBuildConfig(
+            $config->name,
+            $config->baseDir,
+            $directoryPaths,
+            $this->customSublayers,
+            $config->withSubLayers,
+            $config->template,
         );
     }
 }

@@ -20,31 +20,37 @@ final class DirectoryStructureBuilder
     /**
      * @return string[]
      */
-    public function build(
-        string $name,
-        string $baseDir,
-        DirectoryPathCollection $directoryPaths,
-        LayerCollection $customSublayers,
-        bool $withSublayers = false,
-        ?string $template = null,
-    ): array {
-        $root  = $baseDir . self::DIRECTORY_SEPARATOR . $name;
+    public function build(DirectoryBuildConfig $config): array
+    {
+        $root  = $config->baseDir . self::DIRECTORY_SEPARATOR . $config->name;
         $paths = [$root];
 
-        foreach ($directoryPaths->toArray() as $directoryPath) {
+        foreach ($config->directoryPaths->toArray() as $directoryPath) {
             $paths[] = $root . $directoryPath->path;
         }
-        if ($withSublayers) {
-            $layerCollection = $customSublayers;
 
-            if ($template && $layerCollection->isEmpty()) {
-                $layerCollection = $this->getTemplateLayers($template);
-            }
+        if ($config->withSublayers) {
+            $paths = array_merge($paths, $this->buildSublayerPaths($config, $root));
+        }
 
-            foreach ($layerCollection->toArray() as $layer) {
-                foreach ($layer->subLayers->toArray() as $sublayer) {
-                    $paths[] = $root . '/' . $layer->name . '/' . $sublayer->name;
-                }
+        return $paths;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function buildSublayerPaths(DirectoryBuildConfig $config, string $root): array
+    {
+        $paths = [];
+        $layerCollection = $config->customSublayers;
+
+        if ($config->template && $layerCollection->isEmpty()) {
+            $layerCollection = $this->getTemplateLayers($config->template);
+        }
+
+        foreach ($layerCollection->toArray() as $layer) {
+            foreach ($layer->subLayers->toArray() as $sublayer) {
+                $paths[] = $root . '/' . $layer->name . '/' . $sublayer->name;
             }
         }
 
