@@ -169,8 +169,10 @@ readonly class PresetManager
         $result = [];
 
         foreach ($customSubLayers->toArray() as $customSubLayer) {
-            $result[$customSubLayer->name] = array_map(fn (SubLayer $subLayer) => $subLayer->name,
-                $customSubLayer->subLayers->toArray());
+            $result[$customSubLayer->name] = array_map(
+                fn (SubLayer $subLayer) => $subLayer->name,
+                $customSubLayer->subLayers->toArray()
+            );
         }
 
         return $result;

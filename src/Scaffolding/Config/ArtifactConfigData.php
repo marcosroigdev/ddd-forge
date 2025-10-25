@@ -14,7 +14,8 @@ readonly class ArtifactConfigData
         public bool $dryRun,
         public bool $withSubLayers,
         public ?string $template = null
-    ) {}
+    ) {
+    }
 
     public function templateExists(): bool
     {
