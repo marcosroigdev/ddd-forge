@@ -77,14 +77,14 @@ readonly class PresetManager
         }
 
         return new PresetData(
-             $presetData['name'],
-             ScaffoldingType::assertedFrom($presetData['type']),
-             $presetData['withSublayers'],
-             $presetData['baseDir'],
-             LayerCollection::fromArray($presetData['customSublayers']),
-             $presetData['createdAt'],
-             $presetData['template'],
-         );
+            $presetData['name'],
+            ScaffoldingType::assertedFrom($presetData['type']),
+            $presetData['withSublayers'],
+            $presetData['baseDir'],
+            LayerCollection::fromArray($presetData['customSublayers']),
+            $presetData['createdAt'],
+            $presetData['template'],
+        );
     }
 
     public function list(SymfonyStyle $io): void
