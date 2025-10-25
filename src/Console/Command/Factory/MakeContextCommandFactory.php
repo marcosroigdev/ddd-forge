@@ -15,6 +15,7 @@ use DddForge\Scaffolding\Directory\DirectoryPathRegistry;
 use DddForge\Scaffolding\File\PresetManager;
 use DddForge\Scaffolding\File\YamlExporter;
 use DddForge\Scaffolding\Template\TemplateEngine;
+use DddForge\Support\Yaml\YamlLoader;
 use Symfony\Component\Filesystem\Filesystem;
 
 final class MakeContextCommandFactory
@@ -22,7 +23,8 @@ final class MakeContextCommandFactory
     public static function create(): MakeContextCommand
     {
         $filesystem             = new Filesystem();
-        $templateEngine         = new TemplateEngine();
+        $yamlLoader             = new YamlLoader();
+        $templateEngine         = new TemplateEngine($yamlLoader);
         $layerPathRegistry      = new DirectoryPathRegistry();
         $structureBuilder       = new DirectoryStructureBuilder($templateEngine, $layerPathRegistry);
         $forgePaths             = new ForgePaths();

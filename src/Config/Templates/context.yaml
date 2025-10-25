@@ -1,0 +1,93 @@
+templates:
+  basic:
+    name: "Basic DDD (Main layers only)"
+    description: "Creates only the 4 main DDD layers without sublayers"
+    layers: []
+
+  standard:
+    name: "Standard DDD (Recommended)"
+    description: "Complete DDD structure with common sublayers"
+    layers:
+      Domain:
+        - Model
+        - Service
+        - Repository
+        - Event
+      Application:
+        - Command
+        - Query
+        - Handler
+        - Service
+      Infrastructure:
+        - Persistence
+        - Service
+        - Resources
+      UI:
+        - Controller
+        - Command
+
+  cqrs:
+    name: "CQRS Pattern"
+    description: "Command Query Responsibility Segregation"
+    layers:
+      Domain:
+        - Read
+        - Write
+        - Event
+      Application:
+        - Command
+        - Query
+        - Handler
+        - Bus
+      Infrastructure:
+        - Read
+        - Write
+        - Persistence
+        - Resources
+      UI:
+        - Controller
+        - Command
+
+  event-sourcing:
+    name: "Event Sourcing"
+    description: "Event-driven architecture with event store"
+    layers:
+      Domain:
+        - Aggregate
+        - Event
+        - Projection
+      Application:
+        - Command
+        - Query
+        - EventHandler
+        - Projector
+      Infrastructure:
+        - EventStore
+        - Projection
+        - Snapshot
+        - Resources
+      UI:
+        - Controller
+        - Command
+
+  hexagonal:
+    name: "Hexagonal Architecture"
+    description: "Ports and Adapters pattern"
+    layers:
+      Domain:
+        - Model
+        - Port
+        - Service
+      Application:
+        - UseCase
+        - Port
+        - Service
+      Infrastructure:
+        - Adapter
+        - Persistence
+        - External
+        - Resources
+      UI:
+        - Adapter
+        - Controller
+        - Command
