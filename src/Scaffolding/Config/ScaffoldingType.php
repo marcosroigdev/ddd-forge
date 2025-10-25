@@ -9,6 +9,7 @@ use DddForge\Exception\AssertionFailedException;
 enum ScaffoldingType: string
 {
     case CONTEXT = 'context';
+    case VIEW    = 'view';
 
     public static function assertedFrom(string $type): self
     {

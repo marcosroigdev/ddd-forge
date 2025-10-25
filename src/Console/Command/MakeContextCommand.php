@@ -233,8 +233,8 @@ final class MakeContextCommand extends Command
         try {
             $presetData = $this->presetManager->load($presetName);
 
-            if ($presetData['type'] !== ScaffoldingType::CONTEXT->value) {
-                $io->error("Preset '$presetName' is not a context preset (type: {$presetData['type']})");
+            if ($presetData->type !== ScaffoldingType::CONTEXT) {
+                $io->error("Preset '$presetName' is not a context preset (type: {$presetData->type->value})");
                 exit(Command::INVALID);
             }
 
@@ -243,25 +243,25 @@ final class MakeContextCommand extends Command
                 exit(Command::INVALID);
             }
 
-            if (isset($presetData['template'])) {
-                $input->setOption('template', $presetData['template']);
+            if (isset($presetData->template)) {
+                $input->setOption('template', $presetData->template);
             }
 
-            if (!empty($presetData['withSublayers'])) {
+            if (!empty($presetData->withSublayers)) {
                 $input->setOption('with-sublayers', true);
             }
 
-            if (!empty($presetData['customSublayers'])) {
-                $this->customSublayers = LayerCollection::fromArray($presetData['customSublayers']);
+            if (!$presetData->customSublayers->isEmpty()) {
+                $this->customSublayers = $presetData->customSublayers;
                 $input->setOption('with-sublayers', true);
             }
 
-            if ($input->getOption('dir') === 'src' && !empty($presetData['baseDir'])) {
-                $input->setOption('dir', $presetData['baseDir']);
+            if ($input->getOption('dir') === 'src' && !empty($presetData->baseDir)) {
+                $input->setOption('dir', $presetData->baseDir);
             }
 
             $io->success("✓ Loaded preset: <info>$presetName</info>");
-            $io->text("  Template: " . ($presetData['template'] ?? 'custom'));
+            $io->text("  Template: " . ($presetData->template ?? 'custom'));
 
         } catch (Exception $e) {
             $io->error($e->getMessage());

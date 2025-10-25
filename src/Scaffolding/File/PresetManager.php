@@ -6,6 +6,7 @@ namespace DddForge\Scaffolding\File;
 
 use DddForge\Config\ForgePaths;
 use DddForge\Scaffolding\Config\ArtifactConfigData;
+use DddForge\Scaffolding\Config\ScaffoldingType;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\Layer\SubLayer;
 use RuntimeException;
@@ -52,18 +53,7 @@ readonly class PresetManager
         $this->filesystem->dumpFile($presetFile, $jsonContent);
     }
 
-    /**
-     * @return array{
-     *     name: string,
-     *     type: string,
-     *     template: string|null,
-     *     withSublayers: bool,
-     *     baseDir: string,
-     *     customSublayers: array<string, string[]>,
-     *     createdAt: string
-     * }
-     */
-    public function load(string $name): array
+    public function load(string $name): PresetData
     {
         $presetFile = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
 
@@ -86,17 +76,15 @@ readonly class PresetManager
             throw new RuntimeException("Invalid preset file: $presetFile");
         }
 
-        /** @var array{
-         *     name: string,
-         *     type: string,
-         *     template: string|null,
-         *     withSublayers: bool,
-         *     baseDir: string,
-         *     customSublayers: array<string, string[]>,
-         *     createdAt: string
-         * } $presetData
-         */
-        return $presetData;
+        return new PresetData(
+             $presetData['name'],
+             ScaffoldingType::assertedFrom($presetData['type']),
+             $presetData['withSublayers'],
+             $presetData['baseDir'],
+             LayerCollection::fromArray($presetData['customSublayers']),
+             $presetData['createdAt'],
+             $presetData['template'],
+         );
     }
 
     public function list(SymfonyStyle $io): void
