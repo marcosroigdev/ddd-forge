@@ -19,7 +19,7 @@ final readonly class DryRunManager
 
     public function showDryRun(SymfonyStyle $io, PathCollection $paths, ScaffoldingConfig $config): int
     {
-        $io->title("🔍 Dry Run: $config->type $config->name Structure");
+        $io->title("🔍 Dry Run: {$config->type->value} $config->name Structure");
 
         $io->text("The following structure{$config->templateInfo()} would be created:");
         $io->newLine();

@@ -31,12 +31,12 @@ readonly class YamlExporter
 
     private function buildYamlStructure(PathCollection $paths, ScaffoldingConfig $config): string
     {
-        $type = $config->type;
+        $type = $config->type->value;
         $yaml = "# $type: $config->name\n";
         $yaml .= "# Generated: " . date('Y-m-d H:i:s') . "\n";
         $yaml .= "# Template: " . ($config->template ?? 'custom') . "\n\n";
 
-        $yaml .= strtolower($config->type) . ":\n";
+        $yaml .= strtolower($config->type->value) . ":\n";
         $yaml .= "  name: $config->name\n";
         $yaml .= "  baseDir: $config->baseDir\n";
         $yaml .= "  template: " . ($config->template ?? 'custom') . "\n\n";
@@ -62,13 +62,13 @@ readonly class YamlExporter
             }
         }
 
-        foreach ($structure as $layer => $sublayers) {
+        foreach ($structure as $layer => $subLayers) {
             $yaml .= "  $layer:\n";
-            if (empty($sublayers)) {
-                $yaml .= "    sublayers: []\n";
+            if (empty($subLayers)) {
+                $yaml .= "    subLayers: []\n";
             } else {
-                $yaml .= "    sublayers:\n";
-                foreach ($sublayers as $sublayer) {
+                $yaml .= "    subLayers:\n";
+                foreach ($subLayers as $sublayer) {
                     $yaml .= "      - $sublayer\n";
                 }
             }

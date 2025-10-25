@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Config;
 
-readonly final class ForgePaths
+final readonly class ForgePaths
 {
     public const BASE_PATH = '/.ddd-forge';
 

@@ -65,15 +65,15 @@ readonly class InteractiveWizard
             'standard'
         );
 
-        $customSublayers = null;
+        $customSubLayers = null;
 
         if ($selectedTemplate === 'custom') {
             $io->section('Custom Sublayer Configuration');
-            $customSublayers = $this->configureCustomSublayers($io);
+            $customSubLayers = $this->configureCustomSubLayers($io);
             $input->setOption('with-sublayers', true);
         } elseif ($selectedTemplate !== 'basic') {
             $template = $this->templateEngine->getTemplate($selectedTemplate);
-            $customSublayers = $template->layers;
+            $customSubLayers = $template->layers;
             $input->setOption('with-sublayers', true);
             $input->setOption('template', $selectedTemplate);
 
@@ -98,16 +98,16 @@ readonly class InteractiveWizard
 
         $io->newLine();
 
-        return is_null($customSublayers) ? LayerCollection::createEmpty() : $customSublayers;
+        return is_null($customSubLayers) ? LayerCollection::createEmpty() : $customSubLayers;
     }
 
 
-    public function configureCustomSublayers(SymfonyStyle $io): LayerCollection
+    public function configureCustomSubLayers(SymfonyStyle $io): LayerCollection
     {
-        $io->text('Configure sublayers for each main layer. Leave empty to skip a layer.');
+        $io->text('Configure subLayers for each main layer. Leave empty to skip a layer.');
         $io->newLine();
 
-        $customSublayers = [];
+        $customSubLayers = [];
         $directoryPaths = $this->structureBuilder->getDefaultDirectoryPaths();
 
         foreach ($directoryPaths->toArray() as $directoryPath) {
@@ -118,27 +118,27 @@ readonly class InteractiveWizard
                 $io->text("  <comment>Suggestions: " . implode(', ', $suggestions) . "</comment>");
             }
 
-            $createSublayers = $io->confirm("Create sublayers for $directoryPath->name?");
+            $createSubLayers = $io->confirm("Create subLayers for $directoryPath->name?");
 
-            if ($createSublayers) {
-                $sublayersInput = $io->ask(
+            if ($createSubLayers) {
+                $subLayersInput = $io->ask(
                     "Enter sublayer names (comma-separated)",
                     implode(', ', $suggestions)
                 );
 
-                if ($sublayersInput) {
-                    $sublayers = array_map('trim', explode(',', $sublayersInput));
-                    $sublayers = array_filter($sublayers);
-                    $customSublayers[$directoryPath->name] = $sublayers;
+                if ($subLayersInput) {
+                    $subLayers = array_map('trim', explode(',', $subLayersInput));
+                    $subLayers = array_filter($subLayers);
+                    $customSubLayers[$directoryPath->name] = $subLayers;
 
-                    $io->text("  ✓ Will create: <info>" . implode(', ', $sublayers) . "</info>");
+                    $io->text("  ✓ Will create: <info>" . implode(', ', $subLayers) . "</info>");
                 }
             }
 
             $io->newLine();
         }
 
-        return LayerCollection::fromArray($customSublayers);
+        return LayerCollection::fromArray($customSubLayers);
     }
 
     /**

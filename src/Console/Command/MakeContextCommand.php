@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace DddForge\Console\Command;
 
 use DddForge\Config\ForgePaths;
-use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
 use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
 use DddForge\Scaffolding\CommandParam\Input\InputNameValidator;
 use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
 use DddForge\Scaffolding\CommandParam\Mode\InteractiveWizard;
+use DddForge\Scaffolding\Config\ArtifactConfigData;
 use DddForge\Scaffolding\Config\ScaffoldingConfig;
+use DddForge\Scaffolding\Config\ScaffoldingType;
 use DddForge\Scaffolding\Directory\DirectoryBuildConfig;
 use DddForge\Scaffolding\Directory\DirectoryManager;
 use DddForge\Scaffolding\Directory\DirectoryPathCollection;
@@ -200,7 +201,7 @@ final class MakeContextCommand extends Command
             $gitKeep = $input->getOption('gitkeep');
 
             if ($this->wasDirectoriesCreatedSuccessfully($directoriesCreationResult) && $gitKeep) {
-                $this->directoryManager->createGitkeepFiles($io, $directoryPaths);
+                $this->directoryManager->createGitKeepFiles($io, $directoryPaths);
             }
 
             $presetName = $input->getOption('save-preset');
@@ -263,9 +264,10 @@ final class MakeContextCommand extends Command
         }
     }
 
-    private function getConfigContextData(InputInterface $input): ContextConfigData
+    private function getConfigContextData(InputInterface $input): ArtifactConfigData
     {
-        return new ContextConfigData(
+        return new ArtifactConfigData(
+            ScaffoldingType::CONTEXT,
             Str::studly(trim((string) $input->getArgument('name'))),
             rtrim((string) $input->getOption('dir'), self::DIRECTORY_SEPARATOR),
             (bool) $input->getOption('force'),
@@ -276,7 +278,7 @@ final class MakeContextCommand extends Command
     }
 
     private function getDirectoryBuildConfig(
-        ContextConfigData $config,
+        ArtifactConfigData $config,
         DirectoryPathCollection $directoryPaths
     ): DirectoryBuildConfig {
         return new DirectoryBuildConfig(

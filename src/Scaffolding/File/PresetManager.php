@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\File;
 
-use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
+use DddForge\Scaffolding\Config\ArtifactConfigData;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\Layer\SubLayer;
 use RuntimeException;
@@ -20,7 +20,7 @@ readonly class PresetManager
     ) {
     }
 
-    public function save(string $name, ContextConfigData $config, LayerCollection $customSubLayers): void
+    public function save(string $name, ArtifactConfigData $config, LayerCollection $customSubLayers): void
     {
         $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
 
@@ -29,12 +29,13 @@ readonly class PresetManager
         }
 
         $presetData = [
-            'name' => $name,
-            'template' => $config->templateExists() ? $config->template : 'custom',
-            'withSublayers' => $config->withSubLayers,
-            'baseDir' => $config->baseDir,
+            'name'            => $name,
+            'type'            => $config->type->value,
+            'template'        => $config->templateExists() ? $config->template : 'custom',
+            'withSublayers'   => $config->withSubLayers,
+            'baseDir'         => $config->baseDir,
             'customSublayers' => $this->formatPresetLayers($customSubLayers),
-            'createdAt' => date('Y-m-d H:i:s'),
+            'createdAt'       => date('Y-m-d H:i:s'),
         ];
 
         $jsonContent = json_encode($presetData, JSON_PRETTY_PRINT);
@@ -112,7 +113,7 @@ readonly class PresetManager
 
         $tableRows = [];
         foreach ($presets as $presetFile) {
-            $presetName = basename($presetFile, '.json');
+            $presetName   = basename($presetFile, '.json');
             $fileContents = file_get_contents($presetFile);
 
             if ($fileContents === false) {
@@ -124,7 +125,7 @@ readonly class PresetManager
                 continue;
             }
 
-            $template = $data['template'] ?? 'custom';
+            $template      = $data['template'] ?? 'custom';
             $sublayerCount = 0;
 
             if (!empty($data['customSublayers'])) {
@@ -133,7 +134,7 @@ readonly class PresetManager
                 }
             }
 
-            $fileTime = filemtime($presetFile);
+            $fileTime    = filemtime($presetFile);
             $createdDate = $fileTime !== false ? date('Y-m-d H:i', $fileTime) : 'Unknown';
 
             $tableRows[] = [
@@ -168,7 +169,8 @@ readonly class PresetManager
         $result = [];
 
         foreach ($customSubLayers->toArray() as $customSubLayer) {
-            $result[$customSubLayer->name] = array_map(fn (SubLayer $subLayer) => $subLayer->name, $customSubLayer->subLayers->toArray());
+            $result[$customSubLayer->name] = array_map(fn (SubLayer $subLayer) => $subLayer->name,
+                $customSubLayer->subLayers->toArray());
         }
 
         return $result;

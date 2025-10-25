@@ -11,7 +11,7 @@ class ScaffoldingConfig
      */
     public function __construct(
         public string $name,
-        public string $type,
+        public ScaffoldingType $type,
         public bool $force,
         public bool $withSubLayers,
         public string $baseDir,
@@ -31,7 +31,7 @@ class ScaffoldingConfig
     ): self {
         return new self(
             $name,
-            'context',
+            ScaffoldingType::CONTEXT,
             $force,
             $withSubLayers,
             $baseDir,

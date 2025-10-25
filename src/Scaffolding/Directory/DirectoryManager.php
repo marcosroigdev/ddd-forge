@@ -12,7 +12,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 readonly class DirectoryManager
 {
-    private const GITKEEP_FILE = '.gitkeep';
+    private const GIT_KEEP_FILE = '.gitkeep';
 
     public function __construct(
         private Filesystem $filesystem
@@ -24,7 +24,7 @@ readonly class DirectoryManager
         $created = 0;
         $skipped = 0;
 
-        $io->title("🏗️  Creating $config->name $config->type");
+        $io->title("🏗️  Creating $config->name {$config->type->value}");
 
         foreach ($paths->toArray() as $path) {
             try {
@@ -50,19 +50,19 @@ readonly class DirectoryManager
         return Command::SUCCESS;
     }
 
-    public function createGitkeepFiles(SymfonyStyle $io, PathCollection $paths): void
+    public function createGitKeepFiles(SymfonyStyle $io, PathCollection $paths): void
     {
         $created = 0;
 
         $io->section('Creating .gitkeep files');
 
         foreach ($paths->toArray() as $path) {
-            $gitkeepFile = $path->name . '/' . self::GITKEEP_FILE;
+            $gitKeepFile = $path->name . '/' . self::GIT_KEEP_FILE;
 
             try {
-                if (!$this->filesystem->exists($gitkeepFile)) {
-                    $this->filesystem->touch($gitkeepFile);
-                    $io->text("  <info>✔</info> Created: $gitkeepFile");
+                if (!$this->filesystem->exists($gitKeepFile)) {
+                    $this->filesystem->touch($gitKeepFile);
+                    $io->text("  <info>✔</info> Created: $gitKeepFile");
                     $created++;
                 }
             } catch (IOExceptionInterface) {
@@ -76,7 +76,7 @@ readonly class DirectoryManager
 
     private function showSummary(SymfonyStyle $io, ScaffoldingConfig $config, int $created, int $skipped): void
     {
-        $io->success("$config->name $config->type ready{$config->templateText()}!");
+        $io->success("$config->name {$config->type->value} ready{$config->templateText()}!");
 
         $summary = [];
         if ($created > 0) {
