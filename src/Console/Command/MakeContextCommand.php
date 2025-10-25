@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Console\Command;
 
+use DddForge\Config\ForgePaths;
 use DddForge\Console\Command\MakeContext\Configuration\ContextConfigData;
 use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
 use DddForge\Scaffolding\CommandParam\Input\InputNameValidator;
@@ -168,32 +169,12 @@ final class MakeContextCommand extends Command
 
             $config = $this->getConfigContextData($input);
 
-            $paths = $this->directoryStructureBuilder->build(
+            $directoryPaths = $this->directoryStructureBuilder->build(
                 $this->getDirectoryBuildConfig(
                     $config,
                     $this->directoryStructureBuilder->getDefaultDirectoryPaths()
                 )
             );
-
-            $scaffoldingConfig = [
-                'name'           => $config->name,
-                'type'           => 'context',
-                'template'       => $config->template,
-                'force'          => $config->force,
-                'withSublayers'  => $config->withSubLayers,
-                'baseDir'        => $config->baseDir,
-                'contextName'    => $config->name,
-                'successMessage' => [
-                    '🎉 Your bounded context is ready!',
-                    '',
-                    'Next steps:',
-                    '• Add your domain models in the Domain layer',
-                    '• Create application services in the Application layer',
-                    '• Implement infrastructure adapters',
-                    '• Build your user interface'
-                ],
-                'tipMessage'     => 'Tip: Use --template=standard for more detailed structures.'
-            ];
 
             $scaffoldingConfig = ScaffoldingConfig::forContext(
                 $config->name,
@@ -204,26 +185,32 @@ final class MakeContextCommand extends Command
             );
 
             if ($config->dryRun) {
-                return $this->dryRunManager->showDryRun($io, $paths, $scaffoldingConfig);
+                return $this->dryRunManager->showDryRun($io, $directoryPaths, $scaffoldingConfig);
             }
 
-            if ($exportFile = $input->getOption('export')) {
-                $exportPath = getcwd() . '/.ddd-forge/structure/' . ltrim($exportFile, '/');
-                $this->yamlExporter->export($io, $paths, $scaffoldingConfig, $exportPath);
+            $exportFile = $input->getOption('export');
+
+            if ($exportFile) {
+                $exportPath = getcwd() . ForgePaths::structure() . ltrim($exportFile, '/');
+                $this->yamlExporter->export($io, $directoryPaths, $scaffoldingConfig, $exportPath);
             }
 
-            $result = $this->directoryManager->createDirectories($io, $paths, $scaffoldingConfig);
+            $directoriesCreationResult = $this->directoryManager->createDirectories($io, $directoryPaths, $scaffoldingConfig);
 
-            if ($result === Command::SUCCESS && $input->getOption('gitkeep')) {
-                $this->directoryManager->createGitkeepFiles($io, $paths);
+            $gitKeep = $input->getOption('gitkeep');
+
+            if ($this->wasDirectoriesCreatedSuccessfully($directoriesCreationResult) && $gitKeep) {
+                $this->directoryManager->createGitkeepFiles($io, $directoryPaths);
             }
 
-            if ($result === Command::SUCCESS && $presetName = $input->getOption('save-preset')) {
+            $presetName = $input->getOption('save-preset');
+
+            if ($this->wasDirectoriesCreatedSuccessfully($directoriesCreationResult) && $presetName) {
                 $this->presetManager->save($presetName, $config, $this->customSublayers);
                 $io->success("✓ Preset '$presetName' saved successfully!");
             }
 
-            return $result;
+            return $directoriesCreationResult;
 
         } catch (InvalidArgumentException $e) {
             $io->error($e->getMessage());
@@ -300,5 +287,10 @@ final class MakeContextCommand extends Command
             $config->withSubLayers,
             $config->template,
         );
+    }
+
+    private function wasDirectoriesCreatedSuccessfully(int $directoriesCreationResult): bool
+    {
+        return $directoriesCreationResult === Command::SUCCESS;
     }
 }

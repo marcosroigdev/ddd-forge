@@ -10,16 +10,16 @@ use DddForge\Scaffolding\Directory\PathCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class DryRunManager
+final readonly class DryRunManager
 {
     public function __construct(
-        private readonly DirectoryStructureBuilder $structureBuilder
+        private DirectoryStructureBuilder $structureBuilder
     ) {
     }
 
     public function showDryRun(SymfonyStyle $io, PathCollection $paths, ScaffoldingConfig $config): int
     {
-        $io->title("🔍 Dry Run: {$config->type} {$config->name} Structure");
+        $io->title("🔍 Dry Run: $config->type $config->name Structure");
 
         $io->text("The following structure{$config->templateInfo()} would be created:");
         $io->newLine();
@@ -28,7 +28,7 @@ final class DryRunManager
 
         foreach ($directoryGroups->toArray() as $directoryGroup) {
             if ($directoryGroup->isRoot()) {
-                $io->text("  📁 <info>{$config->name}/</info>");
+                $io->text("  📁 <info>$config->name/</info>");
             } else {
                 $io->text("  📂 <info>$directoryGroup->name/</info>");
                 foreach ($directoryGroup->paths->toArray() as $path) {

@@ -57,7 +57,7 @@ final class DirectoryStructureBuilder
         return $paths;
     }
 
-    public function getTemplateLayers(string $templateName): LayerCollection
+    private function getTemplateLayers(string $templateName): LayerCollection
     {
         return $this->templateEngine->getTemplate($templateName)->layers;
     }
