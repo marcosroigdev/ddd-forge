@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Console\Command\Factory;
 
+use DddForge\Config\ForgePaths;
 use DddForge\Console\Command\MakeContext\Input\InputTemplateValidator;
 use DddForge\Console\Command\MakeContextCommand;
 use DddForge\Scaffolding\CommandParam\Mode\DryRunManager;
@@ -24,7 +25,8 @@ final class MakeContextCommandFactory
         $templateEngine         = new TemplateEngine();
         $layerPathRegistry      = new DirectoryPathRegistry();
         $structureBuilder       = new DirectoryStructureBuilder($templateEngine, $layerPathRegistry);
-        $presetManager          = new PresetManager($filesystem);
+        $forgePaths             = new ForgePaths();
+        $presetManager          = new PresetManager($forgePaths, $filesystem);
         $wizard                 = new InteractiveWizard($templateEngine, $structureBuilder);
         $yamlExporter           = new YamlExporter($filesystem);
         $directoryManager       = new DirectoryManager($filesystem);

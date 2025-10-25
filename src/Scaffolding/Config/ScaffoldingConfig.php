@@ -15,7 +15,6 @@ class ScaffoldingConfig
         public bool $force,
         public bool $withSubLayers,
         public string $baseDir,
-        public string $contextName,
         public ?string $template,
         public array $successMessages = [],
         public ?string $tipMessage = null,
@@ -35,7 +34,6 @@ class ScaffoldingConfig
             $force,
             $withSubLayers,
             $baseDir,
-            $name,
             $template,
             [
                 '🎉 Your bounded context is ready!',

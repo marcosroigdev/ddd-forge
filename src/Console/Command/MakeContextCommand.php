@@ -233,6 +233,11 @@ final class MakeContextCommand extends Command
         try {
             $presetData = $this->presetManager->load($presetName);
 
+            if ($presetData['type'] !== ScaffoldingType::CONTEXT->value) {
+                $io->error("Preset '$presetName' is not a context preset (type: {$presetData['type']})");
+                exit(Command::INVALID);
+            }
+
             if (!$input->getArgument('name')) {
                 $io->error('Context name is required when using a preset.');
                 exit(Command::INVALID);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DddForge\Scaffolding\File;
 
+use DddForge\Config\ForgePaths;
 use DddForge\Scaffolding\Config\ArtifactConfigData;
 use DddForge\Scaffolding\Template\Layer\LayerCollection;
 use DddForge\Scaffolding\Template\Layer\SubLayer;
@@ -13,16 +14,19 @@ use Symfony\Component\Filesystem\Filesystem;
 
 readonly class PresetManager
 {
-    private const PRESETS_DIR = '.ddd-forge/presets';
+    private const PRESETS_DIR         = 'presets';
+    private const DIRECTORY_SEPARATOR = '/';
+    private const JSON_FILE_EXTENSION = '.json';
 
     public function __construct(
+        private ForgePaths $forgePaths,
         private Filesystem $filesystem = new Filesystem()
     ) {
     }
 
     public function save(string $name, ArtifactConfigData $config, LayerCollection $customSubLayers): void
     {
-        $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
+        $presetsDir = getcwd() . $this->forgePaths::basePath() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR;
 
         if (!$this->filesystem->exists($presetsDir)) {
             $this->filesystem->mkdir($presetsDir);
@@ -44,13 +48,14 @@ readonly class PresetManager
             throw new RuntimeException('Failed to encode preset data to JSON');
         }
 
-        $presetFile = $presetsDir . '/' . $name . '.json';
+        $presetFile = $presetsDir . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
         $this->filesystem->dumpFile($presetFile, $jsonContent);
     }
 
     /**
      * @return array{
      *     name: string,
+     *     type: string,
      *     template: string|null,
      *     withSublayers: bool,
      *     baseDir: string,
@@ -60,7 +65,7 @@ readonly class PresetManager
      */
     public function load(string $name): array
     {
-        $presetFile = getcwd() . '/' . self::PRESETS_DIR . '/' . $name . '.json';
+        $presetFile = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
 
         if (!file_exists($presetFile)) {
             throw new RuntimeException("Preset '$name' not found");
@@ -75,7 +80,7 @@ readonly class PresetManager
 
         if (
             !is_array($presetData) ||
-            !isset($presetData['name'], $presetData['template'], $presetData['withSublayers'], $presetData['baseDir'], $presetData['customSublayers'], $presetData['createdAt']) ||
+            !isset($presetData['name'], $presetData['type'], $presetData['template'], $presetData['withSublayers'], $presetData['baseDir'], $presetData['customSublayers'], $presetData['createdAt']) ||
             !is_array($presetData['customSublayers'])
         ) {
             throw new RuntimeException("Invalid preset file: $presetFile");
@@ -83,6 +88,7 @@ readonly class PresetManager
 
         /** @var array{
          *     name: string,
+         *     type: string,
          *     template: string|null,
          *     withSublayers: bool,
          *     baseDir: string,
@@ -97,14 +103,14 @@ readonly class PresetManager
     {
         $io->title('📋 Available Presets');
 
-        $presetsDir = getcwd() . '/' . self::PRESETS_DIR;
+        $presetsDir = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR;
 
         if (!is_dir($presetsDir)) {
             $io->warning('No presets found. Create one using --save-preset option.');
             return;
         }
 
-        $presets = glob($presetsDir . '/*.json');
+        $presets = glob($presetsDir . '/*'. self::JSON_FILE_EXTENSION);
 
         if (empty($presets)) {
             $io->warning('No presets found. Create one using --save-preset option.');
@@ -113,7 +119,7 @@ readonly class PresetManager
 
         $tableRows = [];
         foreach ($presets as $presetFile) {
-            $presetName   = basename($presetFile, '.json');
+            $presetName   = basename($presetFile, self::JSON_FILE_EXTENSION);
             $fileContents = file_get_contents($presetFile);
 
             if ($fileContents === false) {
@@ -157,7 +163,7 @@ readonly class PresetManager
 
     public function exists(string $name): bool
     {
-        $presetFile = getcwd() . '/' . self::PRESETS_DIR . '/' . $name . '.json';
+        $presetFile = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
         return file_exists($presetFile);
     }
 

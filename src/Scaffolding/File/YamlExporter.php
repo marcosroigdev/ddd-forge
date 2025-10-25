@@ -45,7 +45,7 @@ readonly class YamlExporter
 
         $structure = [];
         foreach ($paths->toArray() as $path) {
-            $relativePath = str_replace($config->baseDir . '/' . $config->contextName . '/', '', $path->name);
+            $relativePath = str_replace($config->baseDir . '/' . $config->name . '/', '', $path->name);
             $parts = explode('/', $relativePath);
 
             if (count($parts) === 1) {
@@ -76,7 +76,7 @@ readonly class YamlExporter
 
         $yaml .= "\n# Usage:\n";
         $yaml .= "# You can use this file as documentation or recreate the structure\n";
-        $yaml .= "# Command: make:context $config->contextName";
+        $yaml .= "# Command: make:context $config->name";
         if ($config->template) {
             $yaml .= " --template=$config->template";
         }
