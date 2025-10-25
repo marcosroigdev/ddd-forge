@@ -12,6 +12,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 readonly class YamlExporter
 {
+    private const DIRECTORY_SEPARATOR = '/';
+
     public function __construct(
         private Filesystem $filesystem = new Filesystem()
     ) {
@@ -45,8 +47,8 @@ readonly class YamlExporter
 
         $structure = [];
         foreach ($paths->toArray() as $path) {
-            $relativePath = str_replace($config->baseDir . '/' . $config->name . '/', '', $path->name);
-            $parts = explode('/', $relativePath);
+            $relativePath = str_replace($config->baseDir . self::DIRECTORY_SEPARATOR . $config->name . self::DIRECTORY_SEPARATOR, '', $path->name);
+            $parts = explode(self::DIRECTORY_SEPARATOR, $relativePath);
 
             if (count($parts) === 1) {
                 continue;

@@ -12,6 +12,8 @@ use DddForge\Support\Collection\TypedCollection;
  */
 class DirectoryPathCollection extends TypedCollection
 {
+    private const DIRECTORY_SEPARATOR = '/';
+
     protected function type(): string
     {
         return DirectoryPath::class;
@@ -70,7 +72,7 @@ class DirectoryPathCollection extends TypedCollection
 
     private static function validatePathFormat(string $path): void
     {
-        if (!str_starts_with($path, '/')) {
+        if (!str_starts_with($path, self::DIRECTORY_SEPARATOR)) {
             throw DirectoryException::becauseDirectoryPathMustStartWithSlash($path);
         }
 
@@ -82,11 +84,11 @@ class DirectoryPathCollection extends TypedCollection
             throw DirectoryException::becauseDirectoryPathContainsDoubleSlashes($path);
         }
 
-        if ($path !== '/' && str_ends_with($path, '/')) {
+        if ($path !== self::DIRECTORY_SEPARATOR && str_ends_with($path, self::DIRECTORY_SEPARATOR)) {
             throw DirectoryException::becauseDirectoryPathCannotEndWithSlash($path);
         }
 
-        $segments = explode('/', trim($path, '/'));
+        $segments = explode(self::DIRECTORY_SEPARATOR, trim($path, self::DIRECTORY_SEPARATOR));
         foreach ($segments as $segment) {
             if ($segment !== trim($segment)) {
                 throw DirectoryException::becauseDirectoryPathSegmentHasTrailingSpaces($path);

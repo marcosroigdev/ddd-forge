@@ -47,7 +47,7 @@ final class DirectoryStructureBuilder
                 foreach ($layer->subLayers->toArray() as $sublayer) {
                     $paths->add(
                         new Path(
-                            $root . '/' . $layer->name . '/' . $sublayer->name
+                            $root . self::DIRECTORY_SEPARATOR . $layer->name . self::DIRECTORY_SEPARATOR . $sublayer->name
                         )
                     );
                 }
@@ -79,8 +79,8 @@ final class DirectoryStructureBuilder
         );
 
         foreach ($paths->toArray() as $path) {
-            $relativePath = str_replace($name . '/', '', basename(dirname($path->name)) . '/' . basename($path->name));
-            $parts        = explode('/', trim($relativePath, '/'));
+            $relativePath = str_replace($name . self::DIRECTORY_SEPARATOR, '', basename(dirname($path->name)) . self::DIRECTORY_SEPARATOR . basename($path->name));
+            $parts        = explode(self::DIRECTORY_SEPARATOR, trim($relativePath, self::DIRECTORY_SEPARATOR));
 
             if (count($parts) === 1) {
                 $directoryGroupCollection->findByName('root')?->paths->add($path);

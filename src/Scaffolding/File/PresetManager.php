@@ -55,7 +55,7 @@ readonly class PresetManager
 
     public function load(string $name): PresetData
     {
-        $presetFile = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
+        $presetFile = $this->getPresetFilePath($name);
 
         if (!file_exists($presetFile)) {
             throw new RuntimeException("Preset '$name' not found");
@@ -87,11 +87,21 @@ readonly class PresetManager
         );
     }
 
+    private function getPresetFilePath(string $name): string
+    {
+        return $this->getPresetsPath() . self::DIRECTORY_SEPARATOR . $name . self::JSON_FILE_EXTENSION;
+    }
+
+    private function getPresetsPath(): string
+    {
+        return getcwd() . $this->forgePaths::basePath() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR;
+    }
+
     public function list(SymfonyStyle $io): void
     {
         $io->title('📋 Available Presets');
 
-        $presetsDir = getcwd() . self::DIRECTORY_SEPARATOR . self::PRESETS_DIR;
+        $presetsDir = $this->getPresetsPath();
 
         if (!is_dir($presetsDir)) {
             $io->warning('No presets found. Create one using --save-preset option.');

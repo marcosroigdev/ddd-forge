@@ -12,6 +12,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 readonly class DirectoryManager
 {
+    private const DIRECTORY_SEPARATOR = '/';
     private const GIT_KEEP_FILE = '.gitkeep';
 
     public function __construct(
@@ -57,7 +58,7 @@ readonly class DirectoryManager
         $io->section('Creating .gitkeep files');
 
         foreach ($paths->toArray() as $path) {
-            $gitKeepFile = $path->name . '/' . self::GIT_KEEP_FILE;
+            $gitKeepFile = $path->name . self::DIRECTORY_SEPARATOR . self::GIT_KEEP_FILE;
 
             try {
                 if (!$this->filesystem->exists($gitKeepFile)) {
