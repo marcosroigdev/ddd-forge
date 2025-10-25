@@ -44,7 +44,10 @@ final class TemplateEngine
 
     public function getTemplateNames(): StringCollection
     {
-        return StringCollection::create(array_keys($this->getContextTemplatesArray()['templates']));
+        $templates = $this->getContextTemplatesArray()['templates'];
+        /** @var array<string> $keys */
+        $keys = array_keys($templates);
+        return StringCollection::create($keys);
     }
 
     public function buildTemplateHelp(): string
